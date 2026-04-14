@@ -2,9 +2,85 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Streaks</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --fg: #111111;
+    --accent: #2563eb;
+    --muted: #6b7280;
+    --border: #e5e7eb;
+    --row-hover: #f9fafb;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #111111;
+      --fg: #f3f4f6;
+      --accent: #60a5fa;
+      --muted: #9ca3af;
+      --border: #374151;
+      --row-hover: #1f2937;
+    }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--fg); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; padding: 2rem 1rem; }
+  h1 { font-size: 1.5rem; margin-bottom: 0.25rem; }
+  .updated { color: var(--muted); font-size: 0.85rem; margin-bottom: 2rem; }
+  table { width: 100%; border-collapse: collapse; }
+  th { text-align: left; color: var(--muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--border); }
+  td { padding: 0.75rem; border-bottom: 1px solid var(--border); }
+  tr:hover td { background: var(--row-hover); }
+  .name { font-weight: 500; }
+  .num { color: var(--accent); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .grid { font-family: monospace; letter-spacing: 0.1em; }
+  .filled { color: var(--accent); }
+  .empty { color: var(--border); }
+</style>
 </head>
 <body>
-<p>No checkins yet.</p>
+<h1>Streaks</h1>
+<p class="updated">Updated 14 April 2026, 11:17 PM</p>
+<table>
+  <thead>
+    <tr>
+      <th>Activity</th>
+      <th>Current</th>
+      <th>Best</th>
+      <th>Total</th>
+      <th>Last 10 days</th>
+    </tr>
+  </thead>
+  <tbody>
+        <tr>
+            <td class="name">50 pushups</td>
+            <td class="num">0</td>
+            <td class="num">0</td>
+            <td class="num">0</td>
+            <td class="grid"><span class="empty">□</span><span class="empty">□</span><span class="empty">□</span><span class="empty">□</span><span class="empty">□</span><span class="empty">□</span><span class="empty">□</span><span class="empty">□</span><span class="empty">□</span><span class="empty">□</span></td>
+        </tr>
+        <tr>
+            <td class="name">50 squats or 50 bicycle crunches</td>
+            <td class="num">0</td>
+            <td class="num">0</td>
+            <td class="num">0</td>
+            <td class="grid"><span class="empty">□</span><span class="empty">□</span><span class="empty">□</span><span class="empty">□</span><span class="empty">□</span><span class="empty">□</span><span class="empty">□</span><span class="empty">□</span><span class="empty">□</span><span class="empty">□</span></td>
+        </tr>
+        <tr>
+            <td class="name">20 pull ups or 20 pike push ups</td>
+            <td class="num">0</td>
+            <td class="num">0</td>
+            <td class="num">0</td>
+            <td class="grid"><span class="empty">□</span><span class="empty">□</span><span class="empty">□</span><span class="empty">□</span><span class="empty">□</span><span class="empty">□</span><span class="empty">□</span><span class="empty">□</span><span class="empty">□</span><span class="empty">□</span></td>
+        </tr>
+        <tr>
+            <td class="name">10000 steps</td>
+            <td class="num">1</td>
+            <td class="num">1</td>
+            <td class="num">1</td>
+            <td class="grid"><span class="empty">□</span><span class="empty">□</span><span class="empty">□</span><span class="empty">□</span><span class="empty">□</span><span class="empty">□</span><span class="empty">□</span><span class="empty">□</span><span class="empty">□</span><span class="filled">■</span></td>
+        </tr>
+  </tbody>
+</table>
 </body>
 </html>
