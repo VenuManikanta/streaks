@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Streaks</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cal-heatmap/dist/cal-heatmap.css">
 <style>
   :root {
     --bg: #ffffff;
@@ -24,9 +25,9 @@
     }
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--bg); color: var(--fg); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; padding: 2rem 1rem; max-width: 800px; margin: 0 auto; }
+  body { background: var(--bg); color: var(--fg); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; padding: 2rem 1rem; max-width: 900px; margin: 0 auto; }
   h1 { font-size: 1.5rem; margin-bottom: 0.25rem; }
-  h2 { font-size: 1.1rem; margin: 2rem 0 0.75rem; color: var(--muted); }
+  h2 { font-size: 1.1rem; margin: 2rem 0 0.75rem; color: var(--muted); display: flex; align-items: center; gap: 0.5rem; }
   .updated { color: var(--muted); font-size: 0.85rem; margin-bottom: 2rem; }
   table { width: 100%; border-collapse: collapse; margin-bottom: 1rem; }
   th { text-align: left; color: var(--muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--border); }
@@ -39,11 +40,12 @@
   .empty { color: var(--border); }
   .sets { color: var(--muted); font-size: 0.8rem; }
   .note { color: var(--muted); font-size: 0.9rem; line-height: 1.6; margin-bottom: 2rem; padding: 1rem; border-left: 3px solid var(--accent); }
+  #heatmap-reps, #heatmap-calories { overflow-x: auto; padding-bottom: 0.5rem; }
 </style>
 </head>
 <body>
 <h1>Streaks</h1>
-<p class="updated">Updated 19 April 2026, 10:54 AM</p>
+<p class="updated">Updated 19 April 2026, 11:21 AM</p>
 <p class="note">Hey! I realized that doing 50 pushups and 20 pull-ups daily is counterproductive and injury-prone. Instead, I'm pulling the last 7 days of Garmin data and posting it here, along with streaks for 10,000 steps and 50 squats — activities I can do daily without much downside. I'll also make more effort to log my workouts clearly in Garmin. Message me and check in — I'd love to hear from you!</p>
 <table>
   <thead>
@@ -72,6 +74,57 @@
         </tr>
   </tbody>
 </table>
+
+<h2>
+  Activity Heatmap &nbsp;
+  <select id="heatmap-toggle" style="font-size:0.85rem;padding:0.2rem 0.5rem;border-radius:4px;border:1px solid var(--border);background:var(--bg);color:var(--fg);cursor:pointer;">
+    <option value="reps">Reps</option>
+    <option value="calories">Calories</option>
+  </select>
+</h2>
+<div id="heatmap-reps"></div>
+<div id="heatmap-calories" style="display:none"></div>
+<script>
+  const repsData = [{"date": "2026-01-01", "value": 72}, {"date": "2026-01-02", "value": 95}, {"date": "2026-02-01", "value": 16}, {"date": "2026-02-02", "value": 23}, {"date": "2026-02-08", "value": 78}, {"date": "2026-02-09", "value": 47}, {"date": "2026-02-22", "value": 149}, {"date": "2026-02-23", "value": 97}, {"date": "2026-03-21", "value": 99}, {"date": "2026-04-05", "value": 93}, {"date": "2026-04-06", "value": 42}, {"date": "2026-04-15", "value": 121}, {"date": "2026-04-16", "value": 107}, {"date": "2026-04-17", "value": 116}, {"date": "2026-04-18", "value": 41}];
+  const calsData = [{"date": "2026-01-01", "value": 96}, {"date": "2026-01-02", "value": 149}, {"date": "2026-01-03", "value": 542}, {"date": "2026-01-04", "value": 960}, {"date": "2026-01-08", "value": 64}, {"date": "2026-01-14", "value": 64}, {"date": "2026-01-15", "value": 241}, {"date": "2026-01-19", "value": 156}, {"date": "2026-01-21", "value": 655}, {"date": "2026-01-22", "value": 579}, {"date": "2026-02-01", "value": 71}, {"date": "2026-02-02", "value": 119}, {"date": "2026-02-06", "value": 344}, {"date": "2026-02-08", "value": 239}, {"date": "2026-02-09", "value": 132}, {"date": "2026-02-10", "value": 556}, {"date": "2026-02-12", "value": 320}, {"date": "2026-02-14", "value": 680}, {"date": "2026-02-16", "value": 365}, {"date": "2026-02-22", "value": 424}, {"date": "2026-02-23", "value": 222}, {"date": "2026-02-24", "value": 360}, {"date": "2026-02-25", "value": 53}, {"date": "2026-02-28", "value": 526}, {"date": "2026-03-01", "value": 402}, {"date": "2026-03-14", "value": 255}, {"date": "2026-03-16", "value": 58}, {"date": "2026-03-18", "value": 60}, {"date": "2026-03-19", "value": 328}, {"date": "2026-03-21", "value": 165}, {"date": "2026-03-27", "value": 210}, {"date": "2026-04-02", "value": 222}, {"date": "2026-04-04", "value": 305}, {"date": "2026-04-05", "value": 204}, {"date": "2026-04-06", "value": 177}, {"date": "2026-04-10", "value": 378}, {"date": "2026-04-11", "value": 372}, {"date": "2026-04-12", "value": 695}, {"date": "2026-04-14", "value": 149}, {"date": "2026-04-15", "value": 486}, {"date": "2026-04-16", "value": 307}, {"date": "2026-04-17", "value": 120}, {"date": "2026-04-18", "value": 324}];
+
+  function initHeatmap(containerId, data) {
+    const cal = new CalHeatmap();
+    cal.paint({
+      itemSelector: '#' + containerId,
+      data: { source: data, x: 'date', y: 'value', groupY: 'sum' },
+      date: { start: new Date('2026-01-01') },
+      range: 4,
+      domain: { type: 'month', label: { text: 'MMM', position: 'top' } },
+      subDomain: { type: 'day', radius: 2, width: 14, height: 14, gutter: 3 },
+      scale: {
+        color: {
+          type: 'threshold',
+          range: ['#ebedf0', '#9be9a8', '#40c463', '#30a14e', '#216e39'],
+          domain: [1, 25, 75, 150]
+        }
+      }
+    });
+    return cal;
+  }
+
+  let repsCalInstance, calsCalInstance;
+
+  document.addEventListener('DOMContentLoaded', function() {
+    repsCalInstance = initHeatmap('heatmap-reps', repsData);
+    document.getElementById('heatmap-toggle').addEventListener('change', function() {
+      if (this.value === 'reps') {
+        document.getElementById('heatmap-reps').style.display = '';
+        document.getElementById('heatmap-calories').style.display = 'none';
+        if (!repsCalInstance) repsCalInstance = initHeatmap('heatmap-reps', repsData);
+      } else {
+        document.getElementById('heatmap-reps').style.display = 'none';
+        document.getElementById('heatmap-calories').style.display = '';
+        if (!calsCalInstance) calsCalInstance = initHeatmap('heatmap-calories', calsData);
+      }
+    });
+  });
+</script>
 
 <h2>Recent Workouts</h2>
 <table>
@@ -144,7 +197,14 @@
             <td>21m</td>
             <td class="sets"></td>
         </tr>
+        <tr>
+            <td class="name">Table Tennis</td>
+            <td>2026-04-12</td>
+            <td>2h 49m</td>
+            <td class="sets"></td>
+        </tr>
   </tbody>
 </table>
+<script src="https://cdn.jsdelivr.net/npm/cal-heatmap/dist/cal-heatmap.min.js"></script>
 </body>
 </html>
