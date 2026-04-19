@@ -18,22 +18,23 @@
     --shadow: 0 1px 4px rgba(0,0,0,0.07), 0 0 0 1px rgba(0,0,0,0.04);
     --radius: 12px;
   }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #0d0d0d;
-      --fg: #f0f0f0;
-      --accent: #60a5fa;
-      --accent-light: #1e3a5f;
-      --muted: #9ca3af;
-      --border: #252525;
-      --card-bg: #1a1a1a;
-      --row-hover: #1a2a3a;
-      --shadow: 0 1px 4px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04);
-    }
+  body.dark {
+    --bg: #0d0d0d;
+    --fg: #f0f0f0;
+    --accent: #60a5fa;
+    --accent-light: #1e3a5f;
+    --muted: #9ca3af;
+    --border: #252525;
+    --card-bg: #1a1a1a;
+    --row-hover: #1a2a3a;
+    --shadow: 0 1px 4px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04);
   }
+  /* Theme toggle */
+  .theme-toggle { background: none; border: 1px solid var(--border); border-radius: 8px; padding: 0.35rem 0.5rem; cursor: pointer; color: var(--muted); display: flex; align-items: center; transition: border-color 0.15s, color 0.15s; }
+  .theme-toggle:hover { color: var(--fg); border-color: var(--muted); }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { background: var(--bg); color: var(--fg); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; padding: 2rem 1rem; max-width: 860px; margin: 0 auto; }
-  .page-header { margin-bottom: 2rem; }
+  .page-header { margin-bottom: 2rem; display: flex; align-items: flex-start; justify-content: space-between; }
   .page-header h1 { font-size: 1.75rem; font-weight: 700; letter-spacing: -0.02em; }
   .updated { color: var(--muted); font-size: 0.8rem; margin-top: 0.3rem; }
   h2 { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin: 2.5rem 0 0.875rem; }
@@ -82,12 +83,44 @@
   .sets { color: var(--muted); font-size: 0.8rem; }
   .dur-chip { display: inline-block; font-size: 0.78rem; font-weight: 500; color: var(--muted); background: var(--bg); padding: 0.15rem 0.5rem; border-radius: 5px; }
 </style>
+<script>
+  (function() {
+    var saved = localStorage.getItem('theme');
+    var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (saved === 'dark' || (!saved && prefersDark)) document.documentElement.classList.add('preload-dark');
+  })();
+</script>
 </head>
 <body>
+<script>
+  if (document.documentElement.classList.contains('preload-dark')) {
+    document.body.classList.add('dark');
+    document.documentElement.classList.remove('preload-dark');
+  }
+</script>
 <div class="page-header">
-  <h1>Streaks</h1>
-  <p class="updated">Updated 19 April 2026, 10:19 PM</p>
+  <div>
+    <h1>Streaks</h1>
+    <p class="updated">Updated 19 April 2026, 10:21 PM</p>
+  </div>
+  <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme" onclick="toggleTheme()">
+    <svg id="icon-sun" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/></svg>
+    <svg id="icon-moon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+  </button>
 </div>
+<script>
+  function updateIcon() {
+    var dark = document.body.classList.contains('dark');
+    document.getElementById('icon-sun').style.display = dark ? '' : 'none';
+    document.getElementById('icon-moon').style.display = dark ? 'none' : '';
+  }
+  function toggleTheme() {
+    document.body.classList.toggle('dark');
+    localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+    updateIcon();
+  }
+  updateIcon();
+</script>
 <p class="note">Hey! I realized that doing 50 pushups and 20 pull-ups daily is counterproductive and injury-prone. Instead, I'm pulling the last 7 days of Garmin data and posting it here, along with streaks for 10,000 steps and 50 squats — activities I can do daily without much downside. I'll also make more effort to log my workouts clearly in Garmin. Message me and check in — I'd love to hear from you!</p>
 <h2>Current Streaks</h2>
 <div class="streaks-wrap">
