@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Streaks</title>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cal-heatmap@3/cal-heatmap.css">
+<link rel="stylesheet" href="https://unpkg.com/cal-heatmap/dist/cal-heatmap.css">
 <style>
   :root {
     --bg: #ffffff;
@@ -45,7 +45,7 @@
 </head>
 <body>
 <h1>Streaks</h1>
-<p class="updated">Updated 19 April 2026, 11:27 AM</p>
+<p class="updated">Updated 19 April 2026, 11:32 AM</p>
 <p class="note">Hey! I realized that doing 50 pushups and 20 pull-ups daily is counterproductive and injury-prone. Instead, I'm pulling the last 7 days of Garmin data and posting it here, along with streaks for 10,000 steps and 50 squats — activities I can do daily without much downside. I'll also make more effort to log my workouts clearly in Garmin. Message me and check in — I'd love to hear from you!</p>
 <table>
   <thead>
@@ -88,36 +88,27 @@
   const repsData = [{"date": "2026-01-01", "value": 72}, {"date": "2026-01-02", "value": 95}, {"date": "2026-02-01", "value": 16}, {"date": "2026-02-02", "value": 23}, {"date": "2026-02-08", "value": 78}, {"date": "2026-02-09", "value": 47}, {"date": "2026-02-22", "value": 149}, {"date": "2026-02-23", "value": 97}, {"date": "2026-03-21", "value": 99}, {"date": "2026-04-05", "value": 93}, {"date": "2026-04-06", "value": 42}, {"date": "2026-04-15", "value": 121}, {"date": "2026-04-16", "value": 107}, {"date": "2026-04-17", "value": 116}, {"date": "2026-04-18", "value": 41}];
   const calsData = [{"date": "2026-01-01", "value": 96}, {"date": "2026-01-02", "value": 149}, {"date": "2026-01-03", "value": 542}, {"date": "2026-01-04", "value": 960}, {"date": "2026-01-08", "value": 64}, {"date": "2026-01-14", "value": 64}, {"date": "2026-01-15", "value": 241}, {"date": "2026-01-19", "value": 156}, {"date": "2026-01-21", "value": 655}, {"date": "2026-01-22", "value": 579}, {"date": "2026-02-01", "value": 71}, {"date": "2026-02-02", "value": 119}, {"date": "2026-02-06", "value": 344}, {"date": "2026-02-08", "value": 239}, {"date": "2026-02-09", "value": 132}, {"date": "2026-02-10", "value": 556}, {"date": "2026-02-12", "value": 320}, {"date": "2026-02-14", "value": 680}, {"date": "2026-02-16", "value": 365}, {"date": "2026-02-22", "value": 424}, {"date": "2026-02-23", "value": 222}, {"date": "2026-02-24", "value": 360}, {"date": "2026-02-25", "value": 53}, {"date": "2026-02-28", "value": 526}, {"date": "2026-03-01", "value": 402}, {"date": "2026-03-14", "value": 255}, {"date": "2026-03-16", "value": 58}, {"date": "2026-03-18", "value": 60}, {"date": "2026-03-19", "value": 328}, {"date": "2026-03-21", "value": 165}, {"date": "2026-03-27", "value": 210}, {"date": "2026-04-02", "value": 222}, {"date": "2026-04-04", "value": 305}, {"date": "2026-04-05", "value": 204}, {"date": "2026-04-06", "value": 177}, {"date": "2026-04-10", "value": 378}, {"date": "2026-04-11", "value": 372}, {"date": "2026-04-12", "value": 695}, {"date": "2026-04-14", "value": 149}, {"date": "2026-04-15", "value": 486}, {"date": "2026-04-16", "value": 307}, {"date": "2026-04-17", "value": 120}, {"date": "2026-04-18", "value": 324}];
 
-  // Convert array to object keyed by timestamp (ms) for cal-heatmap v3
-  function toTimestampMap(data) {
-    const map = {};
-    data.forEach(function(d) {
-      const ts = Math.floor(new Date(d.date).getTime() / 1000);
-      map[ts] = (map[ts] || 0) + d.value;
-    });
-    return map;
-  }
-
   function initHeatmap(containerId, data) {
     const cal = new CalHeatmap();
-    cal.init({
+    cal.paint({
       itemSelector: '#' + containerId,
-      data: toTimestampMap(data),
-      start: new Date('2026-01-01'),
       range: 4,
-      domain: 'month',
-      subDomain: 'day',
-      cellSize: 14,
-      cellPadding: 3,
-      cellRadius: 2,
-      legend: [25, 75, 150, 300],
-      legendColors: {
-        min: '#9be9a8',
-        max: '#216e39',
-        empty: '#ebedf0'
+      domain: { type: 'month' },
+      subDomain: { type: 'day', radius: 2, width: 14, height: 14, gutter: 3 },
+      date: { start: new Date('2026-01-01') },
+      data: {
+        source: data,
+        x: 'date',
+        y: 'value',
+        groupY: 'sum'
       },
-      label: { position: 'top' },
-      highlight: 'now',
+      scale: {
+        color: {
+          type: 'threshold',
+          range: ['#ebedf0', '#9be9a8', '#40c463', '#30a14e', '#216e39'],
+          domain: [1, 25, 75, 150]
+        }
+      }
     });
     return cal;
   }
@@ -218,7 +209,7 @@
         </tr>
   </tbody>
 </table>
-<script src="https://cdn.jsdelivr.net/npm/d3@3/d3.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/cal-heatmap@3/cal-heatmap.min.js"></script>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://unpkg.com/cal-heatmap/dist/cal-heatmap.min.js"></script>
 </body>
 </html>
