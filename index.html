@@ -24,23 +24,25 @@
     }
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--bg); color: var(--fg); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; padding: 2rem 1rem; }
+  body { background: var(--bg); color: var(--fg); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; padding: 2rem 1rem; max-width: 800px; margin: 0 auto; }
   h1 { font-size: 1.5rem; margin-bottom: 0.25rem; }
+  h2 { font-size: 1.1rem; margin: 2rem 0 0.75rem; color: var(--muted); }
   .updated { color: var(--muted); font-size: 0.85rem; margin-bottom: 2rem; }
-  table { width: 100%; border-collapse: collapse; }
+  table { width: 100%; border-collapse: collapse; margin-bottom: 1rem; }
   th { text-align: left; color: var(--muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--border); }
-  td { padding: 0.75rem; border-bottom: 1px solid var(--border); }
+  td { padding: 0.75rem; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
   tr:hover td { background: var(--row-hover); }
   .name { font-weight: 500; }
   .num { color: var(--accent); font-weight: 600; font-variant-numeric: tabular-nums; }
   .grid { font-family: monospace; letter-spacing: 0.1em; }
   .filled { color: var(--accent); }
   .empty { color: var(--border); }
+  .sets { color: var(--muted); font-size: 0.8rem; }
 </style>
 </head>
 <body>
 <h1>Streaks</h1>
-<p class="updated">Updated 18 April 2026, 10:14 PM</p>
+<p class="updated">Updated 19 April 2026, 10:18 AM</p>
 <table>
   <thead>
     <tr>
@@ -57,28 +59,66 @@
             <td class="num">4</td>
             <td class="num">4</td>
             <td class="num">4</td>
-            <td class="grid"><span class="empty">□</span><span class="empty">□</span><span class="empty">□</span><span class="empty">□</span><span class="empty">□</span><span class="empty">□</span><span class="filled">■</span><span class="filled">■</span><span class="filled">■</span><span class="filled">■</span></td>
+            <td class="grid"><span class="empty">□</span><span class="empty">□</span><span class="empty">□</span><span class="empty">□</span><span class="empty">□</span><span class="filled">■</span><span class="filled">■</span><span class="filled">■</span><span class="filled">■</span><span class="empty">□</span></td>
         </tr>
         <tr>
             <td class="name">50 squats or 50 bicycle crunches</td>
             <td class="num">4</td>
             <td class="num">4</td>
             <td class="num">4</td>
-            <td class="grid"><span class="empty">□</span><span class="empty">□</span><span class="empty">□</span><span class="empty">□</span><span class="empty">□</span><span class="empty">□</span><span class="filled">■</span><span class="filled">■</span><span class="filled">■</span><span class="filled">■</span></td>
+            <td class="grid"><span class="empty">□</span><span class="empty">□</span><span class="empty">□</span><span class="empty">□</span><span class="empty">□</span><span class="filled">■</span><span class="filled">■</span><span class="filled">■</span><span class="filled">■</span><span class="empty">□</span></td>
         </tr>
         <tr>
             <td class="name">20 pull ups or 20 pike push ups</td>
             <td class="num">4</td>
             <td class="num">4</td>
             <td class="num">4</td>
-            <td class="grid"><span class="empty">□</span><span class="empty">□</span><span class="empty">□</span><span class="empty">□</span><span class="empty">□</span><span class="empty">□</span><span class="filled">■</span><span class="filled">■</span><span class="filled">■</span><span class="filled">■</span></td>
+            <td class="grid"><span class="empty">□</span><span class="empty">□</span><span class="empty">□</span><span class="empty">□</span><span class="empty">□</span><span class="filled">■</span><span class="filled">■</span><span class="filled">■</span><span class="filled">■</span><span class="empty">□</span></td>
         </tr>
         <tr>
             <td class="name">10000 steps</td>
             <td class="num">5</td>
             <td class="num">5</td>
             <td class="num">5</td>
-            <td class="grid"><span class="empty">□</span><span class="empty">□</span><span class="empty">□</span><span class="empty">□</span><span class="empty">□</span><span class="filled">■</span><span class="filled">■</span><span class="filled">■</span><span class="filled">■</span><span class="filled">■</span></td>
+            <td class="grid"><span class="empty">□</span><span class="empty">□</span><span class="empty">□</span><span class="empty">□</span><span class="filled">■</span><span class="filled">■</span><span class="filled">■</span><span class="filled">■</span><span class="filled">■</span><span class="empty">□</span></td>
+        </tr>
+  </tbody>
+</table>
+
+<h2>Recent Workouts</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Activity</th>
+      <th>Date</th>
+      <th>Duration</th>
+      <th>Sets</th>
+    </tr>
+  </thead>
+  <tbody>
+        <tr>
+            <td class="name">Badminton</td>
+            <td>2026-04-18</td>
+            <td>25m</td>
+            <td class="sets"></td>
+        </tr>
+        <tr>
+            <td class="name">Strength</td>
+            <td>2026-04-18</td>
+            <td>0m</td>
+            <td class="sets">Push Up: 7</td>
+        </tr>
+        <tr>
+            <td class="name">Strength</td>
+            <td>2026-04-18</td>
+            <td>18m</td>
+            <td class="sets">Sit Up: 8  Pull Up: 13  Unknown: 4  Triceps Extension: 4</td>
+        </tr>
+        <tr>
+            <td class="name">Strength</td>
+            <td>2026-04-18</td>
+            <td>2m</td>
+            <td class="sets">Unknown: 5</td>
         </tr>
   </tbody>
 </table>
