@@ -38,21 +38,34 @@
   .updated { color: var(--muted); font-size: 0.8rem; margin-top: 0.3rem; }
   h2 { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin: 2.5rem 0 0.875rem; }
   .note { font-size: 0.875rem; line-height: 1.7; color: var(--muted); margin-bottom: 0.5rem; padding: 1rem 1.25rem; border-left: 3px solid var(--accent); background: var(--card-bg); border-radius: 0 var(--radius) var(--radius) 0; box-shadow: var(--shadow); }
-  /* Streak table */
+  /* Streak rows */
   .streaks-wrap { background: var(--card-bg); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; margin-bottom: 0.5rem; }
+  .streak-row { display: flex; align-items: center; gap: 1.25rem; padding: 1rem 1.25rem; border-bottom: 1px solid var(--border); }
+  .streak-row:last-child { border-bottom: none; }
+  .streak-row:hover { background: var(--row-hover); }
+  .streak-name { flex: 1; font-weight: 600; font-size: 0.95rem; }
+  .streak-count { text-align: center; min-width: 64px; }
+  .count-num { font-size: 1.75rem; font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; line-height: 1; }
+  .count-label { font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 0.2rem; }
+  .streak-grid { display: flex; gap: 4px; align-items: center; }
+  .streak-meta { text-align: right; font-size: 0.75rem; color: var(--muted); white-space: nowrap; }
+  .sq { display: inline-block; width: 13px; height: 13px; border-radius: 2px; flex-shrink: 0; }
+  .sq.filled { background: var(--accent); }
+  .sq.empty { background: var(--border); }
+  @media (max-width: 600px) {
+    .streak-row { flex-wrap: wrap; }
+    .streak-name { flex: 1 0 50%; }
+    .streak-count { flex: 0 0 auto; }
+    .streak-grid { flex: 1 0 100%; }
+    .streak-meta { flex: 1 0 100%; text-align: left; }
+  }
+  /* Workout table */
   table { width: 100%; border-collapse: collapse; }
   th { text-align: left; color: var(--muted); font-size: 0.68rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); }
   td { padding: 0.875rem 1rem; border-bottom: 1px solid var(--border); font-size: 0.9rem; vertical-align: middle; }
   tr:last-child td { border-bottom: none; }
   tr:hover td { background: var(--row-hover); }
   .name { font-weight: 600; }
-  .num { color: var(--accent); font-weight: 700; font-size: 1.15rem; font-variant-numeric: tabular-nums; }
-  .num-small { color: var(--muted); font-weight: 500; font-size: 0.9rem; font-variant-numeric: tabular-nums; }
-  /* Day grid */
-  .day-grid { display: flex; gap: 3px; align-items: center; }
-  .sq { display: inline-block; width: 12px; height: 12px; border-radius: 2px; flex-shrink: 0; }
-  .sq.filled { background: var(--accent); }
-  .sq.empty { background: var(--border); }
   /* Heatmap */
   .heatmap-tabs { display: flex; gap: 2px; background: var(--border); border-radius: 8px; padding: 2px; width: fit-content; margin-bottom: 0.875rem; }
   .heatmap-tab { padding: 0.3rem 0.9rem; font-size: 0.8rem; font-weight: 500; border: none; background: none; color: var(--muted); border-radius: 6px; cursor: pointer; transition: background 0.15s, color 0.15s; }
@@ -73,38 +86,29 @@
 <body>
 <div class="page-header">
   <h1>Streaks</h1>
-  <p class="updated">Updated 19 April 2026, 10:11 PM</p>
+  <p class="updated">Updated 19 April 2026, 10:19 PM</p>
 </div>
 <p class="note">Hey! I realized that doing 50 pushups and 20 pull-ups daily is counterproductive and injury-prone. Instead, I'm pulling the last 7 days of Garmin data and posting it here, along with streaks for 10,000 steps and 50 squats — activities I can do daily without much downside. I'll also make more effort to log my workouts clearly in Garmin. Message me and check in — I'd love to hear from you!</p>
 <h2>Current Streaks</h2>
 <div class="streaks-wrap">
-<table>
-  <thead>
-    <tr>
-      <th>Activity</th>
-      <th>Current</th>
-      <th>Best</th>
-      <th>Total</th>
-      <th>Last 10 days</th>
-    </tr>
-  </thead>
-  <tbody>
-        <tr>
-            <td class="name">50 squats 🔥</td>
-            <td class="num">5</td>
-            <td class="num-small">5</td>
-            <td class="num-small">5</td>
-            <td><div class="day-grid"><span class="sq empty"></span><span class="sq empty"></span><span class="sq empty"></span><span class="sq empty"></span><span class="sq empty"></span><span class="sq filled"></span><span class="sq filled"></span><span class="sq filled"></span><span class="sq filled"></span><span class="sq filled"></span></div></td>
-        </tr>
-        <tr>
-            <td class="name">10000 steps 🔥</td>
-            <td class="num">7</td>
-            <td class="num-small">7</td>
-            <td class="num-small">7</td>
-            <td><div class="day-grid"><span class="sq empty"></span><span class="sq empty"></span><span class="sq empty"></span><span class="sq filled"></span><span class="sq filled"></span><span class="sq filled"></span><span class="sq filled"></span><span class="sq filled"></span><span class="sq filled"></span><span class="sq filled"></span></div></td>
-        </tr>
-  </tbody>
-</table>
+<div class="streak-row">
+  <div class="streak-name">50 squats</div>
+  <div class="streak-count">
+    <div class="count-num">5 🔥</div>
+    <div class="count-label">day streak</div>
+  </div>
+  <div class="streak-grid"><span class="sq empty"></span><span class="sq empty"></span><span class="sq empty"></span><span class="sq empty"></span><span class="sq empty"></span><span class="sq filled"></span><span class="sq filled"></span><span class="sq filled"></span><span class="sq filled"></span><span class="sq filled"></span></div>
+  <div class="streak-meta">Best 5 · Total 5</div>
+</div>
+<div class="streak-row">
+  <div class="streak-name">10k steps</div>
+  <div class="streak-count">
+    <div class="count-num">7 🔥</div>
+    <div class="count-label">day streak</div>
+  </div>
+  <div class="streak-grid"><span class="sq empty"></span><span class="sq empty"></span><span class="sq empty"></span><span class="sq filled"></span><span class="sq filled"></span><span class="sq filled"></span><span class="sq filled"></span><span class="sq filled"></span><span class="sq filled"></span><span class="sq filled"></span></div>
+  <div class="streak-meta">Best 7 · Total 7</div>
+</div>
 </div>
 
 <h2>Activity Heatmap</h2>
