@@ -60,13 +60,24 @@
     .streak-grid { flex: 1 0 100%; }
     .streak-meta { flex: 1 0 100%; text-align: left; }
   }
-  /* Workout table */
-  table { width: 100%; border-collapse: collapse; }
-  th { text-align: left; color: var(--muted); font-size: 0.68rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); }
-  td { padding: 0.875rem 1rem; border-bottom: 1px solid var(--border); font-size: 0.9rem; vertical-align: middle; }
-  tr:last-child td { border-bottom: none; }
-  tr:hover td { background: var(--row-hover); }
-  .name { font-weight: 600; }
+  /* Today card */
+  .today-card { background: var(--card-bg); border-radius: var(--radius); box-shadow: var(--shadow); padding: 1.25rem; margin-bottom: 0.75rem; border-left: 3px solid var(--accent); }
+  .today-header { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); margin-bottom: 0.75rem; }
+  /* Past days */
+  .workouts-wrap { background: var(--card-bg); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+  .day-block { display: flex; gap: 1rem; padding: 0.875rem 1.25rem; border-bottom: 1px solid var(--border); align-items: flex-start; }
+  .day-block:last-child { border-bottom: none; }
+  .day-block.rest { opacity: 0.45; }
+  .day-label { font-size: 0.78rem; font-weight: 600; color: var(--muted); min-width: 48px; padding-top: 0.2rem; }
+  .day-rest { font-size: 0.85rem; color: var(--muted); }
+  .day-activities { flex: 1; display: flex; flex-direction: column; gap: 0.6rem; }
+  /* Activity rows */
+  .workout-activity { display: flex; flex-direction: column; gap: 0.3rem; }
+  .workout-activity-header { display: flex; align-items: center; gap: 0.75rem; }
+  .workout-name { font-weight: 600; font-size: 0.9rem; flex: 1; }
+  /* Exercise pills */
+  .ex-pills { display: flex; flex-wrap: wrap; gap: 0.3rem; padding-left: 1.6rem; }
+  .ex-pill { font-size: 0.72rem; background: var(--bg); color: var(--muted); padding: 0.15rem 0.5rem; border-radius: 5px; border: 1px solid var(--border); }
   /* Heatmap */
   .heatmap-tabs { display: flex; gap: 2px; background: var(--border); border-radius: 8px; padding: 2px; width: fit-content; margin-bottom: 0.875rem; }
   .heatmap-tab { padding: 0.3rem 0.9rem; font-size: 0.8rem; font-weight: 500; border: none; background: none; color: var(--muted); border-radius: 6px; cursor: pointer; transition: background 0.15s, color 0.15s; }
@@ -77,10 +88,6 @@
   .legend-swatch { display: inline-block; width: 12px; height: 12px; border-radius: 2px; }
   .legend-label { font-size: 0.72rem; color: var(--muted); }
   .legend-goal { font-size: 0.72rem; color: var(--muted); margin-left: 0.75rem; }
-  /* Workout table */
-  .workouts-wrap { background: var(--card-bg); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
-  .workout-date-row td { background: var(--bg); color: var(--muted); font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; padding: 0.5rem 1rem; border-bottom: 1px solid var(--border); }
-  .sets { color: var(--muted); font-size: 0.8rem; }
   .dur-chip { display: inline-block; font-size: 0.78rem; font-weight: 500; color: var(--muted); background: var(--bg); padding: 0.15rem 0.5rem; border-radius: 5px; }
 </style>
 <script>
@@ -101,7 +108,7 @@
 <div class="page-header">
   <div>
     <h1>Streaks</h1>
-    <p class="updated">Updated 19 April 2026, 10:27 PM</p>
+    <p class="updated">Updated 19 April 2026, 10:43 PM</p>
   </div>
   <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme" onclick="toggleTheme()">
     <svg id="icon-sun" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/></svg>
@@ -220,85 +227,48 @@
 </script>
 
 <h2>Recent Workouts</h2>
+<div class="today-card">
+  <div class="today-header">Today · 19 Apr</div>
+  <div class="workout-activity">
+    <div class="workout-activity-header"><span class="workout-name">🏋️ Strength</span><span class="dur-chip">6m</span></div><div class="ex-pills"><span class="ex-pill">Squat 51</span></div>
+  </div>
+</div>
 <div class="workouts-wrap">
-<table>
-  <thead>
-    <tr>
-      <th>Activity</th>
-      <th>Duration</th>
-      <th>Sets</th>
-    </tr>
-  </thead>
-  <tbody>
-        <tr class="workout-date-row"><td colspan="3">19 Apr 2026</td></tr>
-        <tr>
-            <td class="name">🏋️ Strength</td>
-            <td><span class="dur-chip">6m</span></td>
-            <td><span class="sets">Squat: 51</span></td>
-        </tr>
-        <tr class="workout-date-row"><td colspan="3">18 Apr 2026</td></tr>
-        <tr>
-            <td class="name">🏸 Badminton</td>
-            <td><span class="dur-chip">25m</span></td>
-            <td></td>
-        </tr>
-        <tr>
-            <td class="name">🏋️ Strength</td>
-            <td><span class="dur-chip">0m</span></td>
-            <td><span class="sets">Push Up: 7</span></td>
-        </tr>
-        <tr>
-            <td class="name">🏋️ Strength</td>
-            <td><span class="dur-chip">18m</span></td>
-            <td><span class="sets">Sit Up: 8  ·  Pull Up: 13  ·  Unknown: 4  ·  Triceps Extension: 4</span></td>
-        </tr>
-        <tr>
-            <td class="name">🏋️ Strength</td>
-            <td><span class="dur-chip">2m</span></td>
-            <td><span class="sets">Unknown: 5</span></td>
-        </tr>
-        <tr class="workout-date-row"><td colspan="3">17 Apr 2026</td></tr>
-        <tr>
-            <td class="name">🏋️ Strength</td>
-            <td><span class="dur-chip">19m</span></td>
-            <td><span class="sets">Push Up: 45  ·  Pull Up: 20  ·  Cardio: 26  ·  Squat: 25</span></td>
-        </tr>
-        <tr class="workout-date-row"><td colspan="3">16 Apr 2026</td></tr>
-        <tr>
-            <td class="name">🏋️ Strength</td>
-            <td><span class="dur-chip">2h 14m</span></td>
-            <td><span class="sets">Push Up: 32  ·  Pull Up: 10  ·  Cardio: 40  ·  Unknown: 25</span></td>
-        </tr>
-        <tr class="workout-date-row"><td colspan="3">15 Apr 2026</td></tr>
-        <tr>
-            <td class="name">🧘 Meditation</td>
-            <td><span class="dur-chip">3m</span></td>
-            <td></td>
-        </tr>
-        <tr>
-            <td class="name">🏋️ Strength</td>
-            <td><span class="dur-chip">41m</span></td>
-            <td><span class="sets">Push Up: 50  ·  Pull Up: 21  ·  Squat: 50</span></td>
-        </tr>
-        <tr>
-            <td class="name">🏓 Table Tennis</td>
-            <td><span class="dur-chip">32m</span></td>
-            <td></td>
-        </tr>
-        <tr class="workout-date-row"><td colspan="3">14 Apr 2026</td></tr>
-        <tr>
-            <td class="name">🏓 Table Tennis</td>
-            <td><span class="dur-chip">21m</span></td>
-            <td></td>
-        </tr>
-        <tr class="workout-date-row"><td colspan="3">12 Apr 2026</td></tr>
-        <tr>
-            <td class="name">🏓 Table Tennis</td>
-            <td><span class="dur-chip">2h 49m</span></td>
-            <td></td>
-        </tr>
-  </tbody>
-</table>
+<div class="day-block"><div class="day-label">18 Apr</div><div class="day-activities">
+  <div class="workout-activity">
+    <div class="workout-activity-header"><span class="workout-name">🏸 Badminton</span><span class="dur-chip">25m</span></div>
+  </div>
+  <div class="workout-activity">
+    <div class="workout-activity-header"><span class="workout-name">🏋️ Strength</span><span class="dur-chip">21m</span></div><div class="ex-pills"><span class="ex-pill">Push Up 7</span><span class="ex-pill">Sit Up 8</span><span class="ex-pill">Pull Up 13</span><span class="ex-pill">Unknown 9</span><span class="ex-pill">Triceps Extension 4</span></div>
+  </div>
+</div></div>
+<div class="day-block"><div class="day-label">17 Apr</div><div class="day-activities">
+  <div class="workout-activity">
+    <div class="workout-activity-header"><span class="workout-name">🏋️ Strength</span><span class="dur-chip">19m</span></div><div class="ex-pills"><span class="ex-pill">Push Up 45</span><span class="ex-pill">Pull Up 20</span><span class="ex-pill">Cardio 26</span><span class="ex-pill">Squat 25</span></div>
+  </div>
+</div></div>
+<div class="day-block"><div class="day-label">16 Apr</div><div class="day-activities">
+  <div class="workout-activity">
+    <div class="workout-activity-header"><span class="workout-name">🏋️ Strength</span><span class="dur-chip">2h 14m</span></div><div class="ex-pills"><span class="ex-pill">Push Up 32</span><span class="ex-pill">Pull Up 10</span><span class="ex-pill">Cardio 40</span><span class="ex-pill">Unknown 25</span></div>
+  </div>
+</div></div>
+<div class="day-block"><div class="day-label">15 Apr</div><div class="day-activities">
+  <div class="workout-activity">
+    <div class="workout-activity-header"><span class="workout-name">🧘 Meditation</span><span class="dur-chip">3m</span></div>
+  </div>
+  <div class="workout-activity">
+    <div class="workout-activity-header"><span class="workout-name">🏋️ Strength</span><span class="dur-chip">41m</span></div><div class="ex-pills"><span class="ex-pill">Push Up 50</span><span class="ex-pill">Pull Up 21</span><span class="ex-pill">Squat 50</span></div>
+  </div>
+  <div class="workout-activity">
+    <div class="workout-activity-header"><span class="workout-name">🏓 Table Tennis</span><span class="dur-chip">32m</span></div>
+  </div>
+</div></div>
+<div class="day-block"><div class="day-label">14 Apr</div><div class="day-activities">
+  <div class="workout-activity">
+    <div class="workout-activity-header"><span class="workout-name">🏓 Table Tennis</span><span class="dur-chip">21m</span></div>
+  </div>
+</div></div>
+<div class="day-block rest"><div class="day-label">13 Apr</div><div class="day-rest">Rest</div></div>
 </div>
 <script src="https://d3js.org/d3.v7.min.js"></script>
 <script src="https://unpkg.com/cal-heatmap/dist/cal-heatmap.min.js"></script>
