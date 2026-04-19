@@ -7,46 +7,73 @@
 <link rel="stylesheet" href="https://unpkg.com/cal-heatmap/dist/cal-heatmap.css">
 <style>
   :root {
-    --bg: #ffffff;
+    --bg: #f5f5f7;
     --fg: #111111;
     --accent: #2563eb;
+    --accent-light: #dbeafe;
     --muted: #6b7280;
     --border: #e5e7eb;
-    --row-hover: #f9fafb;
+    --card-bg: #ffffff;
+    --row-hover: #f0f6ff;
+    --shadow: 0 1px 4px rgba(0,0,0,0.07), 0 0 0 1px rgba(0,0,0,0.04);
+    --radius: 12px;
   }
   @media (prefers-color-scheme: dark) {
     :root {
-      --bg: #111111;
-      --fg: #f3f4f6;
+      --bg: #0d0d0d;
+      --fg: #f0f0f0;
       --accent: #60a5fa;
+      --accent-light: #1e3a5f;
       --muted: #9ca3af;
-      --border: #374151;
-      --row-hover: #1f2937;
+      --border: #252525;
+      --card-bg: #1a1a1a;
+      --row-hover: #1a2a3a;
+      --shadow: 0 1px 4px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04);
     }
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--bg); color: var(--fg); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; padding: 2rem 1rem; max-width: 900px; margin: 0 auto; }
-  h1 { font-size: 1.5rem; margin-bottom: 0.25rem; }
-  h2 { font-size: 1.1rem; margin: 2rem 0 0.75rem; color: var(--muted); display: flex; align-items: center; gap: 0.5rem; }
-  .updated { color: var(--muted); font-size: 0.85rem; margin-bottom: 2rem; }
-  table { width: 100%; border-collapse: collapse; margin-bottom: 1rem; }
-  th { text-align: left; color: var(--muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--border); }
-  td { padding: 0.75rem; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+  body { background: var(--bg); color: var(--fg); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; padding: 2rem 1rem; max-width: 860px; margin: 0 auto; }
+  .page-header { margin-bottom: 2rem; }
+  .page-header h1 { font-size: 1.75rem; font-weight: 700; letter-spacing: -0.02em; }
+  .updated { color: var(--muted); font-size: 0.8rem; margin-top: 0.3rem; }
+  h2 { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin: 2.5rem 0 0.875rem; }
+  .note { font-size: 0.875rem; line-height: 1.7; color: var(--muted); margin-bottom: 0.5rem; padding: 1rem 1.25rem; border-left: 3px solid var(--accent); background: var(--card-bg); border-radius: 0 var(--radius) var(--radius) 0; box-shadow: var(--shadow); }
+  /* Streak table */
+  .streaks-wrap { background: var(--card-bg); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; margin-bottom: 0.5rem; }
+  table { width: 100%; border-collapse: collapse; }
+  th { text-align: left; color: var(--muted); font-size: 0.68rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); }
+  td { padding: 0.875rem 1rem; border-bottom: 1px solid var(--border); font-size: 0.9rem; vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
   tr:hover td { background: var(--row-hover); }
-  .name { font-weight: 500; }
-  .num { color: var(--accent); font-weight: 600; font-variant-numeric: tabular-nums; }
-  .grid { font-family: monospace; letter-spacing: 0.1em; }
-  .filled { color: var(--accent); }
-  .empty { color: var(--border); }
+  .name { font-weight: 600; }
+  .num { color: var(--accent); font-weight: 700; font-size: 1.15rem; font-variant-numeric: tabular-nums; }
+  .num-small { color: var(--muted); font-weight: 500; font-size: 0.9rem; font-variant-numeric: tabular-nums; }
+  /* Day grid */
+  .day-grid { display: flex; gap: 3px; align-items: center; }
+  .sq { display: inline-block; width: 12px; height: 12px; border-radius: 2px; flex-shrink: 0; }
+  .sq.filled { background: var(--accent); }
+  .sq.empty { background: var(--border); }
+  /* Heatmap */
+  .heatmap-tabs { display: flex; gap: 2px; background: var(--border); border-radius: 8px; padding: 2px; width: fit-content; margin-bottom: 0.875rem; }
+  .heatmap-tab { padding: 0.3rem 0.9rem; font-size: 0.8rem; font-weight: 500; border: none; background: none; color: var(--muted); border-radius: 6px; cursor: pointer; transition: background 0.15s, color 0.15s; }
+  .heatmap-tab.active { background: var(--card-bg); color: var(--fg); box-shadow: var(--shadow); }
+  .heatmap-tab:hover:not(.active) { color: var(--fg); }
+  .heatmap-wrap { background: var(--card-bg); border-radius: var(--radius); box-shadow: var(--shadow); padding: 1.25rem; overflow-x: auto; }
+  /* Workout table */
+  .workouts-wrap { background: var(--card-bg); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+  .workout-date-row td { background: var(--bg); color: var(--muted); font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; padding: 0.5rem 1rem; border-bottom: 1px solid var(--border); }
   .sets { color: var(--muted); font-size: 0.8rem; }
-  .note { color: var(--muted); font-size: 0.9rem; line-height: 1.6; margin-bottom: 2rem; padding: 1rem; border-left: 3px solid var(--accent); }
-  #heatmap-reps, #heatmap-calories, #heatmap-steps { overflow-x: auto; padding-bottom: 0.5rem; }
+  .dur-chip { display: inline-block; font-size: 0.78rem; font-weight: 500; color: var(--muted); background: var(--bg); padding: 0.15rem 0.5rem; border-radius: 5px; }
 </style>
 </head>
 <body>
-<h1>Streaks</h1>
-<p class="updated">Updated 19 April 2026, 09:40 PM</p>
+<div class="page-header">
+  <h1>Streaks</h1>
+  <p class="updated">Updated 19 April 2026, 09:55 PM</p>
+</div>
 <p class="note">Hey! I realized that doing 50 pushups and 20 pull-ups daily is counterproductive and injury-prone. Instead, I'm pulling the last 7 days of Garmin data and posting it here, along with streaks for 10,000 steps and 50 squats — activities I can do daily without much downside. I'll also make more effort to log my workouts clearly in Garmin. Message me and check in — I'd love to hear from you!</p>
+<h2>Current Streaks</h2>
+<div class="streaks-wrap">
 <table>
   <thead>
     <tr>
@@ -59,33 +86,34 @@
   </thead>
   <tbody>
         <tr>
-            <td class="name">50 squats</td>
+            <td class="name">50 squats 🔥</td>
             <td class="num">5</td>
-            <td class="num">5</td>
-            <td class="num">5</td>
-            <td class="grid"><span class="empty">□</span><span class="empty">□</span><span class="empty">□</span><span class="empty">□</span><span class="empty">□</span><span class="filled">■</span><span class="filled">■</span><span class="filled">■</span><span class="filled">■</span><span class="filled">■</span></td>
+            <td class="num-small">5</td>
+            <td class="num-small">5</td>
+            <td><div class="day-grid"><span class="sq empty"></span><span class="sq empty"></span><span class="sq empty"></span><span class="sq empty"></span><span class="sq empty"></span><span class="sq filled"></span><span class="sq filled"></span><span class="sq filled"></span><span class="sq filled"></span><span class="sq filled"></span></div></td>
         </tr>
         <tr>
-            <td class="name">10000 steps</td>
+            <td class="name">10000 steps 🔥</td>
             <td class="num">7</td>
-            <td class="num">7</td>
-            <td class="num">7</td>
-            <td class="grid"><span class="empty">□</span><span class="empty">□</span><span class="empty">□</span><span class="filled">■</span><span class="filled">■</span><span class="filled">■</span><span class="filled">■</span><span class="filled">■</span><span class="filled">■</span><span class="filled">■</span></td>
+            <td class="num-small">7</td>
+            <td class="num-small">7</td>
+            <td><div class="day-grid"><span class="sq empty"></span><span class="sq empty"></span><span class="sq empty"></span><span class="sq filled"></span><span class="sq filled"></span><span class="sq filled"></span><span class="sq filled"></span><span class="sq filled"></span><span class="sq filled"></span><span class="sq filled"></span></div></td>
         </tr>
   </tbody>
 </table>
+</div>
 
-<h2>
-  Activity Heatmap &nbsp;
-  <select id="heatmap-toggle" style="font-size:0.85rem;padding:0.2rem 0.5rem;border-radius:4px;border:1px solid var(--border);background:var(--bg);color:var(--fg);cursor:pointer;">
-    <option value="reps">Reps</option>
-    <option value="calories">Active Calories</option>
-    <option value="steps">Steps</option>
-  </select>
-</h2>
-<div id="heatmap-reps"></div>
-<div id="heatmap-calories" style="display:none"></div>
-<div id="heatmap-steps" style="display:none"></div>
+<h2>Activity Heatmap</h2>
+<div class="heatmap-tabs">
+  <button class="heatmap-tab active" data-heatmap="reps">Reps</button>
+  <button class="heatmap-tab" data-heatmap="calories">Calories</button>
+  <button class="heatmap-tab" data-heatmap="steps">Steps</button>
+</div>
+<div class="heatmap-wrap">
+  <div id="heatmap-reps"></div>
+  <div id="heatmap-calories" style="display:none"></div>
+  <div id="heatmap-steps" style="display:none"></div>
+</div>
 <script>
   const repsData = [{"date": "2025-11-01", "value": 16}, {"date": "2025-11-03", "value": 125}, {"date": "2025-11-07", "value": 99}, {"date": "2025-11-08", "value": 35}, {"date": "2025-11-15", "value": 94}, {"date": "2025-11-26", "value": 50}, {"date": "2025-11-27", "value": 56}, {"date": "2025-11-29", "value": 86}, {"date": "2025-12-01", "value": 208}, {"date": "2025-12-02", "value": 149}, {"date": "2025-12-03", "value": 214}, {"date": "2025-12-04", "value": 152}, {"date": "2025-12-06", "value": 129}, {"date": "2025-12-07", "value": 198}, {"date": "2025-12-09", "value": 95}, {"date": "2025-12-11", "value": 153}, {"date": "2025-12-12", "value": 107}, {"date": "2025-12-14", "value": 149}, {"date": "2025-12-15", "value": 165}, {"date": "2025-12-16", "value": 142}, {"date": "2025-12-19", "value": 165}, {"date": "2026-01-01", "value": 72}, {"date": "2026-01-02", "value": 95}, {"date": "2026-02-01", "value": 16}, {"date": "2026-02-02", "value": 23}, {"date": "2026-02-08", "value": 78}, {"date": "2026-02-09", "value": 47}, {"date": "2026-02-22", "value": 149}, {"date": "2026-02-23", "value": 97}, {"date": "2026-03-21", "value": 99}, {"date": "2026-04-05", "value": 93}, {"date": "2026-04-06", "value": 42}, {"date": "2026-04-15", "value": 121}, {"date": "2026-04-16", "value": 107}, {"date": "2026-04-17", "value": 116}, {"date": "2026-04-18", "value": 41}, {"date": "2026-04-19", "value": 51}];
   const calsData = [{"date": "2025-11-01", "value": 1406}, {"date": "2025-11-02", "value": 258}, {"date": "2025-11-03", "value": 552}, {"date": "2025-11-04", "value": 378}, {"date": "2025-11-05", "value": 195}, {"date": "2025-11-06", "value": 278}, {"date": "2025-11-07", "value": 648}, {"date": "2025-11-08", "value": 311}, {"date": "2025-11-09", "value": 131}, {"date": "2025-11-10", "value": 379}, {"date": "2025-11-11", "value": 317}, {"date": "2025-11-12", "value": 981}, {"date": "2025-11-13", "value": 779}, {"date": "2025-11-14", "value": 651}, {"date": "2025-11-15", "value": 351}, {"date": "2025-11-16", "value": 249}, {"date": "2025-11-17", "value": 544}, {"date": "2025-11-18", "value": 433}, {"date": "2025-11-19", "value": 378}, {"date": "2025-11-20", "value": 844}, {"date": "2025-11-21", "value": 603}, {"date": "2025-11-22", "value": 567}, {"date": "2025-11-23", "value": 285}, {"date": "2025-11-24", "value": 152}, {"date": "2025-11-25", "value": 638}, {"date": "2025-11-26", "value": 71}, {"date": "2025-11-27", "value": 48}, {"date": "2025-11-28", "value": 46}, {"date": "2025-11-29", "value": 316}, {"date": "2025-11-30", "value": 384}, {"date": "2025-12-01", "value": 391}, {"date": "2025-12-02", "value": 515}, {"date": "2025-12-03", "value": 422}, {"date": "2025-12-04", "value": 380}, {"date": "2025-12-05", "value": 122}, {"date": "2025-12-06", "value": 485}, {"date": "2025-12-07", "value": 521}, {"date": "2025-12-08", "value": 76}, {"date": "2025-12-09", "value": 348}, {"date": "2025-12-10", "value": 132}, {"date": "2025-12-11", "value": 562}, {"date": "2025-12-12", "value": 408}, {"date": "2025-12-13", "value": 47}, {"date": "2025-12-14", "value": 309}, {"date": "2025-12-15", "value": 338}, {"date": "2025-12-16", "value": 461}, {"date": "2025-12-17", "value": 88}, {"date": "2025-12-18", "value": 61}, {"date": "2025-12-19", "value": 322}, {"date": "2025-12-20", "value": 193}, {"date": "2025-12-21", "value": 129}, {"date": "2025-12-22", "value": 530}, {"date": "2025-12-23", "value": 433}, {"date": "2025-12-24", "value": 388}, {"date": "2025-12-25", "value": 798}, {"date": "2025-12-26", "value": 421}, {"date": "2025-12-27", "value": 377}, {"date": "2025-12-28", "value": 651}, {"date": "2025-12-29", "value": 987}, {"date": "2025-12-30", "value": 949}, {"date": "2025-12-31", "value": 711}, {"date": "2026-01-01", "value": 409}, {"date": "2026-01-02", "value": 327}, {"date": "2026-01-03", "value": 880}, {"date": "2026-01-04", "value": 1078}, {"date": "2026-01-05", "value": 239}, {"date": "2026-01-06", "value": 352}, {"date": "2026-01-07", "value": 86}, {"date": "2026-01-08", "value": 400}, {"date": "2026-01-09", "value": 21}, {"date": "2026-01-10", "value": 52}, {"date": "2026-01-11", "value": 83}, {"date": "2026-01-12", "value": 178}, {"date": "2026-01-13", "value": 350}, {"date": "2026-01-14", "value": 374}, {"date": "2026-01-15", "value": 912}, {"date": "2026-01-16", "value": 228}, {"date": "2026-01-17", "value": 3}, {"date": "2026-01-18", "value": 159}, {"date": "2026-01-19", "value": 671}, {"date": "2026-01-20", "value": 505}, {"date": "2026-01-21", "value": 665}, {"date": "2026-01-22", "value": 1182}, {"date": "2026-01-23", "value": 133}, {"date": "2026-01-24", "value": 22}, {"date": "2026-01-25", "value": 602}, {"date": "2026-01-26", "value": 96}, {"date": "2026-01-27", "value": 1016}, {"date": "2026-01-28", "value": 107}, {"date": "2026-01-29", "value": 320}, {"date": "2026-01-30", "value": 96}, {"date": "2026-01-31", "value": 346}, {"date": "2026-02-01", "value": 319}, {"date": "2026-02-02", "value": 694}, {"date": "2026-02-03", "value": 469}, {"date": "2026-02-04", "value": 49}, {"date": "2026-02-05", "value": 317}, {"date": "2026-02-06", "value": 707}, {"date": "2026-02-07", "value": 211}, {"date": "2026-02-08", "value": 846}, {"date": "2026-02-09", "value": 866}, {"date": "2026-02-10", "value": 803}, {"date": "2026-02-11", "value": 176}, {"date": "2026-02-12", "value": 652}, {"date": "2026-02-13", "value": 246}, {"date": "2026-02-14", "value": 872}, {"date": "2026-02-15", "value": 395}, {"date": "2026-02-16", "value": 629}, {"date": "2026-02-17", "value": 621}, {"date": "2026-02-18", "value": 330}, {"date": "2026-02-19", "value": 103}, {"date": "2026-02-22", "value": 801}, {"date": "2026-02-23", "value": 640}, {"date": "2026-02-24", "value": 673}, {"date": "2026-02-25", "value": 457}, {"date": "2026-02-26", "value": 490}, {"date": "2026-02-27", "value": 312}, {"date": "2026-02-28", "value": 587}, {"date": "2026-03-01", "value": 537}, {"date": "2026-03-02", "value": 509}, {"date": "2026-03-03", "value": 225}, {"date": "2026-03-04", "value": 65}, {"date": "2026-03-05", "value": 326}, {"date": "2026-03-06", "value": 561}, {"date": "2026-03-07", "value": 414}, {"date": "2026-03-08", "value": 597}, {"date": "2026-03-09", "value": 485}, {"date": "2026-03-10", "value": 621}, {"date": "2026-03-11", "value": 300}, {"date": "2026-03-12", "value": 793}, {"date": "2026-03-13", "value": 290}, {"date": "2026-03-14", "value": 508}, {"date": "2026-03-15", "value": 399}, {"date": "2026-03-16", "value": 1190}, {"date": "2026-03-17", "value": 147}, {"date": "2026-03-18", "value": 923}, {"date": "2026-03-19", "value": 639}, {"date": "2026-03-20", "value": 200}, {"date": "2026-03-21", "value": 370}, {"date": "2026-03-23", "value": 195}, {"date": "2026-03-24", "value": 486}, {"date": "2026-03-25", "value": 277}, {"date": "2026-03-26", "value": 486}, {"date": "2026-03-27", "value": 394}, {"date": "2026-03-28", "value": 490}, {"date": "2026-03-29", "value": 342}, {"date": "2026-03-30", "value": 619}, {"date": "2026-03-31", "value": 5}, {"date": "2026-04-01", "value": 624}, {"date": "2026-04-02", "value": 398}, {"date": "2026-04-03", "value": 16}, {"date": "2026-04-04", "value": 622}, {"date": "2026-04-05", "value": 623}, {"date": "2026-04-06", "value": 610}, {"date": "2026-04-08", "value": 350}, {"date": "2026-04-09", "value": 574}, {"date": "2026-04-10", "value": 688}, {"date": "2026-04-11", "value": 573}, {"date": "2026-04-12", "value": 1095}, {"date": "2026-04-13", "value": 1079}, {"date": "2026-04-14", "value": 1004}, {"date": "2026-04-15", "value": 958}, {"date": "2026-04-16", "value": 635}, {"date": "2026-04-17", "value": 486}, {"date": "2026-04-18", "value": 1166}, {"date": "2026-04-19", "value": 443}];
@@ -146,108 +174,102 @@
 
   document.addEventListener('DOMContentLoaded', function() {
     initHeatmap('heatmap-reps', repsData);
-    document.getElementById('heatmap-toggle').addEventListener('change', function() {
-      document.getElementById('heatmap-reps').style.display = 'none';
-      document.getElementById('heatmap-calories').style.display = 'none';
-      document.getElementById('heatmap-steps').style.display = 'none';
-      if (this.value === 'reps') {
-        document.getElementById('heatmap-reps').style.display = '';
-      } else if (this.value === 'calories') {
-        document.getElementById('heatmap-calories').style.display = '';
-        if (!calsCalInstance) calsCalInstance = initHeatmap('heatmap-calories', calsData);
-      } else if (this.value === 'steps') {
-        document.getElementById('heatmap-steps').style.display = '';
-        if (!stepsCalInstance) stepsCalInstance = initStepsHeatmap('heatmap-steps', stepsData);
-      }
+    document.querySelectorAll('.heatmap-tab').forEach(function(tab) {
+      tab.addEventListener('click', function() {
+        document.querySelectorAll('.heatmap-tab').forEach(function(t) { t.classList.remove('active'); });
+        this.classList.add('active');
+        var val = this.dataset.heatmap;
+        document.getElementById('heatmap-reps').style.display = val === 'reps' ? '' : 'none';
+        document.getElementById('heatmap-calories').style.display = val === 'calories' ? '' : 'none';
+        document.getElementById('heatmap-steps').style.display = val === 'steps' ? '' : 'none';
+        if (val === 'calories' && !calsCalInstance) calsCalInstance = initHeatmap('heatmap-calories', calsData);
+        if (val === 'steps' && !stepsCalInstance) stepsCalInstance = initStepsHeatmap('heatmap-steps', stepsData);
+      });
     });
   });
 </script>
 
 <h2>Recent Workouts</h2>
+<div class="workouts-wrap">
 <table>
   <thead>
     <tr>
       <th>Activity</th>
-      <th>Date</th>
       <th>Duration</th>
       <th>Sets</th>
     </tr>
   </thead>
   <tbody>
+        <tr class="workout-date-row"><td colspan="3">19 Apr 2026</td></tr>
         <tr>
-            <td class="name">Strength</td>
-            <td>2026-04-19</td>
-            <td>6m</td>
-            <td class="sets">Squat: 51</td>
+            <td class="name">🏋️ Strength</td>
+            <td><span class="dur-chip">6m</span></td>
+            <td><span class="sets">Squat: 51</span></td>
+        </tr>
+        <tr class="workout-date-row"><td colspan="3">18 Apr 2026</td></tr>
+        <tr>
+            <td class="name">🏸 Badminton</td>
+            <td><span class="dur-chip">25m</span></td>
+            <td></td>
         </tr>
         <tr>
-            <td class="name">Badminton</td>
-            <td>2026-04-18</td>
-            <td>25m</td>
-            <td class="sets"></td>
+            <td class="name">🏋️ Strength</td>
+            <td><span class="dur-chip">0m</span></td>
+            <td><span class="sets">Push Up: 7</span></td>
         </tr>
         <tr>
-            <td class="name">Strength</td>
-            <td>2026-04-18</td>
-            <td>0m</td>
-            <td class="sets">Push Up: 7</td>
+            <td class="name">🏋️ Strength</td>
+            <td><span class="dur-chip">18m</span></td>
+            <td><span class="sets">Sit Up: 8  ·  Pull Up: 13  ·  Unknown: 4  ·  Triceps Extension: 4</span></td>
         </tr>
         <tr>
-            <td class="name">Strength</td>
-            <td>2026-04-18</td>
-            <td>18m</td>
-            <td class="sets">Sit Up: 8  Pull Up: 13  Unknown: 4  Triceps Extension: 4</td>
+            <td class="name">🏋️ Strength</td>
+            <td><span class="dur-chip">2m</span></td>
+            <td><span class="sets">Unknown: 5</span></td>
+        </tr>
+        <tr class="workout-date-row"><td colspan="3">17 Apr 2026</td></tr>
+        <tr>
+            <td class="name">🏋️ Strength</td>
+            <td><span class="dur-chip">19m</span></td>
+            <td><span class="sets">Push Up: 45  ·  Pull Up: 20  ·  Cardio: 26  ·  Squat: 25</span></td>
+        </tr>
+        <tr class="workout-date-row"><td colspan="3">16 Apr 2026</td></tr>
+        <tr>
+            <td class="name">🏋️ Strength</td>
+            <td><span class="dur-chip">2h 14m</span></td>
+            <td><span class="sets">Push Up: 32  ·  Pull Up: 10  ·  Cardio: 40  ·  Unknown: 25</span></td>
+        </tr>
+        <tr class="workout-date-row"><td colspan="3">15 Apr 2026</td></tr>
+        <tr>
+            <td class="name">🧘 Meditation</td>
+            <td><span class="dur-chip">3m</span></td>
+            <td></td>
         </tr>
         <tr>
-            <td class="name">Strength</td>
-            <td>2026-04-18</td>
-            <td>2m</td>
-            <td class="sets">Unknown: 5</td>
+            <td class="name">🏋️ Strength</td>
+            <td><span class="dur-chip">41m</span></td>
+            <td><span class="sets">Push Up: 50  ·  Pull Up: 21  ·  Squat: 50</span></td>
         </tr>
         <tr>
-            <td class="name">Strength</td>
-            <td>2026-04-17</td>
-            <td>19m</td>
-            <td class="sets">Push Up: 45  Pull Up: 20  Cardio: 26  Squat: 25</td>
+            <td class="name">🏓 Table Tennis</td>
+            <td><span class="dur-chip">32m</span></td>
+            <td></td>
         </tr>
+        <tr class="workout-date-row"><td colspan="3">14 Apr 2026</td></tr>
         <tr>
-            <td class="name">Strength</td>
-            <td>2026-04-16</td>
-            <td>2h 14m</td>
-            <td class="sets">Push Up: 32  Pull Up: 10  Cardio: 40  Unknown: 25</td>
+            <td class="name">🏓 Table Tennis</td>
+            <td><span class="dur-chip">21m</span></td>
+            <td></td>
         </tr>
+        <tr class="workout-date-row"><td colspan="3">12 Apr 2026</td></tr>
         <tr>
-            <td class="name">Meditation</td>
-            <td>2026-04-15</td>
-            <td>3m</td>
-            <td class="sets"></td>
-        </tr>
-        <tr>
-            <td class="name">Strength</td>
-            <td>2026-04-15</td>
-            <td>41m</td>
-            <td class="sets">Push Up: 50  Pull Up: 21  Squat: 50</td>
-        </tr>
-        <tr>
-            <td class="name">Table Tennis</td>
-            <td>2026-04-15</td>
-            <td>32m</td>
-            <td class="sets"></td>
-        </tr>
-        <tr>
-            <td class="name">Table Tennis</td>
-            <td>2026-04-14</td>
-            <td>21m</td>
-            <td class="sets"></td>
-        </tr>
-        <tr>
-            <td class="name">Table Tennis</td>
-            <td>2026-04-12</td>
-            <td>2h 49m</td>
-            <td class="sets"></td>
+            <td class="name">🏓 Table Tennis</td>
+            <td><span class="dur-chip">2h 49m</span></td>
+            <td></td>
         </tr>
   </tbody>
 </table>
+</div>
 <script src="https://d3js.org/d3.v7.min.js"></script>
 <script src="https://unpkg.com/cal-heatmap/dist/cal-heatmap.min.js"></script>
 <script src="https://unpkg.com/@popperjs/core@2"></script>
