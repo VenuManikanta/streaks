@@ -45,7 +45,7 @@
 </head>
 <body>
 <h1>Streaks</h1>
-<p class="updated">Updated 19 April 2026, 11:35 AM</p>
+<p class="updated">Updated 19 April 2026, 11:48 AM</p>
 <p class="note">Hey! I realized that doing 50 pushups and 20 pull-ups daily is counterproductive and injury-prone. Instead, I'm pulling the last 7 days of Garmin data and posting it here, along with streaks for 10,000 steps and 50 squats — activities I can do daily without much downside. I'll also make more effort to log my workouts clearly in Garmin. Message me and check in — I'd love to hear from you!</p>
 <table>
   <thead>
@@ -80,13 +80,16 @@
   <select id="heatmap-toggle" style="font-size:0.85rem;padding:0.2rem 0.5rem;border-radius:4px;border:1px solid var(--border);background:var(--bg);color:var(--fg);cursor:pointer;">
     <option value="reps">Reps</option>
     <option value="calories">Calories</option>
+    <option value="steps">Steps</option>
   </select>
 </h2>
 <div id="heatmap-reps"></div>
 <div id="heatmap-calories" style="display:none"></div>
+<div id="heatmap-steps" style="display:none"></div>
 <script>
   const repsData = [{"date": "2026-01-01", "value": 72}, {"date": "2026-01-02", "value": 95}, {"date": "2026-02-01", "value": 16}, {"date": "2026-02-02", "value": 23}, {"date": "2026-02-08", "value": 78}, {"date": "2026-02-09", "value": 47}, {"date": "2026-02-22", "value": 149}, {"date": "2026-02-23", "value": 97}, {"date": "2026-03-21", "value": 99}, {"date": "2026-04-05", "value": 93}, {"date": "2026-04-06", "value": 42}, {"date": "2026-04-15", "value": 121}, {"date": "2026-04-16", "value": 107}, {"date": "2026-04-17", "value": 116}, {"date": "2026-04-18", "value": 41}];
   const calsData = [{"date": "2026-01-01", "value": 96}, {"date": "2026-01-02", "value": 149}, {"date": "2026-01-03", "value": 542}, {"date": "2026-01-04", "value": 960}, {"date": "2026-01-08", "value": 64}, {"date": "2026-01-14", "value": 64}, {"date": "2026-01-15", "value": 241}, {"date": "2026-01-19", "value": 156}, {"date": "2026-01-21", "value": 655}, {"date": "2026-01-22", "value": 579}, {"date": "2026-02-01", "value": 71}, {"date": "2026-02-02", "value": 119}, {"date": "2026-02-06", "value": 344}, {"date": "2026-02-08", "value": 239}, {"date": "2026-02-09", "value": 132}, {"date": "2026-02-10", "value": 556}, {"date": "2026-02-12", "value": 320}, {"date": "2026-02-14", "value": 680}, {"date": "2026-02-16", "value": 365}, {"date": "2026-02-22", "value": 424}, {"date": "2026-02-23", "value": 222}, {"date": "2026-02-24", "value": 360}, {"date": "2026-02-25", "value": 53}, {"date": "2026-02-28", "value": 526}, {"date": "2026-03-01", "value": 402}, {"date": "2026-03-14", "value": 255}, {"date": "2026-03-16", "value": 58}, {"date": "2026-03-18", "value": 60}, {"date": "2026-03-19", "value": 328}, {"date": "2026-03-21", "value": 165}, {"date": "2026-03-27", "value": 210}, {"date": "2026-04-02", "value": 222}, {"date": "2026-04-04", "value": 305}, {"date": "2026-04-05", "value": 204}, {"date": "2026-04-06", "value": 177}, {"date": "2026-04-10", "value": 378}, {"date": "2026-04-11", "value": 372}, {"date": "2026-04-12", "value": 695}, {"date": "2026-04-14", "value": 149}, {"date": "2026-04-15", "value": 486}, {"date": "2026-04-16", "value": 307}, {"date": "2026-04-17", "value": 120}, {"date": "2026-04-18", "value": 324}];
+  const stepsData = [{"date": "2026-01-01", "value": 144}, {"date": "2026-01-02", "value": 190}, {"date": "2026-01-03", "value": 1314}, {"date": "2026-01-04", "value": 2532}, {"date": "2026-01-08", "value": 1074}, {"date": "2026-01-14", "value": 1084}, {"date": "2026-01-15", "value": 1832}, {"date": "2026-01-19", "value": 2560}, {"date": "2026-01-21", "value": 1756}, {"date": "2026-01-22", "value": 2454}, {"date": "2026-02-01", "value": 32}, {"date": "2026-02-02", "value": 1372}, {"date": "2026-02-06", "value": 1696}, {"date": "2026-02-08", "value": 156}, {"date": "2026-02-09", "value": 904}, {"date": "2026-02-10", "value": 1584}, {"date": "2026-02-12", "value": 1422}, {"date": "2026-02-14", "value": 2362}, {"date": "2026-02-16", "value": 1572}, {"date": "2026-02-22", "value": 1622}, {"date": "2026-02-23", "value": 194}, {"date": "2026-02-24", "value": 1874}, {"date": "2026-02-25", "value": 964}, {"date": "2026-02-28", "value": 988}, {"date": "2026-03-01", "value": 1176}, {"date": "2026-03-14", "value": 894}, {"date": "2026-03-16", "value": 966}, {"date": "2026-03-18", "value": 958}, {"date": "2026-03-19", "value": 1146}, {"date": "2026-03-21", "value": 266}, {"date": "2026-03-27", "value": 930}, {"date": "2026-04-02", "value": 850}, {"date": "2026-04-04", "value": 2138}, {"date": "2026-04-05", "value": 914}, {"date": "2026-04-06", "value": 1096}, {"date": "2026-04-10", "value": 1860}, {"date": "2026-04-11", "value": 1406}, {"date": "2026-04-12", "value": 2054}, {"date": "2026-04-14", "value": 590}, {"date": "2026-04-15", "value": 1230}, {"date": "2026-04-16", "value": 214}, {"date": "2026-04-17", "value": 232}, {"date": "2026-04-18", "value": 690}];
 
   function initHeatmap(containerId, data) {
     const cal = new CalHeatmap();
@@ -113,18 +116,48 @@
     return cal;
   }
 
+  function initStepsHeatmap(containerId, data) {
+    const cal = new CalHeatmap();
+    cal.paint({
+      itemSelector: '#' + containerId,
+      range: 4,
+      domain: { type: 'month' },
+      subDomain: { type: 'day', radius: 2, width: 14, height: 14, gutter: 3 },
+      date: { start: new Date('2026-01-01') },
+      data: {
+        source: data,
+        x: 'date',
+        y: 'value',
+        groupY: 'sum'
+      },
+      scale: {
+        color: {
+          type: 'threshold',
+          range: ['#ebedf0', '#fed976', '#feb24c', '#40c463', '#30a14e', '#FFD700'],
+          domain: [1, 2500, 5000, 10000, 20000]
+        }
+      }
+    }, [[Tooltip, { text: function(timestamp, value) { return value ? value.toLocaleString() + ' steps on ' + new Date(timestamp).toDateString() : 'No data'; } }]]);
+    return cal;
+  }
+
   let calsCalInstance;
+  let stepsCalInstance;
 
   document.addEventListener('DOMContentLoaded', function() {
     initHeatmap('heatmap-reps', repsData);
     document.getElementById('heatmap-toggle').addEventListener('change', function() {
+      document.getElementById('heatmap-reps').style.display = 'none';
+      document.getElementById('heatmap-calories').style.display = 'none';
+      document.getElementById('heatmap-steps').style.display = 'none';
       if (this.value === 'reps') {
         document.getElementById('heatmap-reps').style.display = '';
-        document.getElementById('heatmap-calories').style.display = 'none';
-      } else {
-        document.getElementById('heatmap-reps').style.display = 'none';
+      } else if (this.value === 'calories') {
         document.getElementById('heatmap-calories').style.display = '';
         if (!calsCalInstance) calsCalInstance = initHeatmap('heatmap-calories', calsData);
+      } else if (this.value === 'steps') {
+        document.getElementById('heatmap-steps').style.display = '';
+        if (!stepsCalInstance) stepsCalInstance = initStepsHeatmap('heatmap-steps', stepsData);
       }
     });
   });
