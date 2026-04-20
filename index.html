@@ -7,91 +7,245 @@
 <link rel="stylesheet" href="https://unpkg.com/cal-heatmap/dist/cal-heatmap.css">
 <style>
   :root {
-    --bg: #ffffff;
+    --bg: #f5f5f7;
     --fg: #111111;
     --accent: #2563eb;
+    --accent-light: #dbeafe;
     --muted: #6b7280;
     --border: #e5e7eb;
-    --row-hover: #f9fafb;
+    --card-bg: #ffffff;
+    --row-hover: #f0f6ff;
+    --shadow: 0 1px 4px rgba(0,0,0,0.07), 0 0 0 1px rgba(0,0,0,0.04);
+    --radius: 12px;
   }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #111111;
-      --fg: #f3f4f6;
-      --accent: #60a5fa;
-      --muted: #9ca3af;
-      --border: #374151;
-      --row-hover: #1f2937;
-    }
+  body.dark {
+    --bg: #0d0d0d;
+    --fg: #f0f0f0;
+    --accent: #60a5fa;
+    --accent-light: #1e3a5f;
+    --muted: #9ca3af;
+    --border: #252525;
+    --card-bg: #1a1a1a;
+    --row-hover: #1a2a3a;
+    --shadow: 0 1px 4px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04);
   }
+  /* Theme toggle */
+  .theme-toggle { background: none; border: 1px solid var(--border); border-radius: 8px; padding: 0.35rem 0.5rem; cursor: pointer; color: var(--muted); display: flex; align-items: center; transition: border-color 0.15s, color 0.15s; }
+  .theme-toggle:hover { color: var(--fg); border-color: var(--muted); }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--bg); color: var(--fg); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; padding: 2rem 1rem; max-width: 900px; margin: 0 auto; }
-  h1 { font-size: 1.5rem; margin-bottom: 0.25rem; }
-  h2 { font-size: 1.1rem; margin: 2rem 0 0.75rem; color: var(--muted); display: flex; align-items: center; gap: 0.5rem; }
-  .updated { color: var(--muted); font-size: 0.85rem; margin-bottom: 2rem; }
-  table { width: 100%; border-collapse: collapse; margin-bottom: 1rem; }
-  th { text-align: left; color: var(--muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--border); }
-  td { padding: 0.75rem; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
-  tr:hover td { background: var(--row-hover); }
-  .name { font-weight: 500; }
-  .num { color: var(--accent); font-weight: 600; font-variant-numeric: tabular-nums; }
-  .grid { font-family: monospace; letter-spacing: 0.1em; }
-  .filled { color: var(--accent); }
-  .empty { color: var(--border); }
-  .sets { color: var(--muted); font-size: 0.8rem; }
-  .note { color: var(--muted); font-size: 0.9rem; line-height: 1.6; margin-bottom: 2rem; padding: 1rem; border-left: 3px solid var(--accent); }
-  #heatmap-reps, #heatmap-calories, #heatmap-steps { overflow-x: auto; padding-bottom: 0.5rem; }
+  body { background: var(--bg); color: var(--fg); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; padding: 2rem 1rem; max-width: 860px; margin: 0 auto; }
+  .page-header { margin-bottom: 2rem; display: flex; align-items: flex-start; justify-content: space-between; }
+  .page-header h1 { font-size: 1.75rem; font-weight: 700; letter-spacing: -0.02em; }
+  .updated { color: var(--muted); font-size: 0.8rem; margin-top: 0.3rem; }
+  h2 { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin: 2.5rem 0 0.875rem; }
+  .note { font-size: 0.875rem; line-height: 1.7; color: var(--muted); margin-bottom: 0.5rem; padding: 1rem 1.25rem; border-left: 3px solid var(--accent); background: var(--card-bg); border-radius: 0 var(--radius) var(--radius) 0; box-shadow: var(--shadow); }
+  /* Streak rows */
+  .streaks-wrap { background: var(--card-bg); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; margin-bottom: 0.5rem; }
+  .streak-row { display: flex; align-items: center; gap: 1.25rem; padding: 1rem 1.25rem; border-bottom: 1px solid var(--border); }
+  .streak-row:last-child { border-bottom: none; }
+  .streak-row:hover { background: var(--row-hover); }
+  .streak-name { flex: 1; font-weight: 600; font-size: 0.95rem; }
+  .streak-count { text-align: center; min-width: 64px; }
+  .count-num { font-size: 1.75rem; font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; line-height: 1; }
+  .count-label { font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 0.2rem; }
+  .streak-grid { display: flex; gap: 4px; align-items: center; }
+  .streak-meta { text-align: right; font-size: 0.75rem; color: var(--muted); white-space: nowrap; }
+  .sq { display: inline-block; width: 13px; height: 13px; border-radius: 2px; flex-shrink: 0; }
+  .sq.filled { background: var(--accent); }
+  .sq.empty { background: var(--border); }
+  @media (max-width: 600px) {
+    .streak-row { flex-wrap: wrap; }
+    .streak-name { flex: 1 0 50%; }
+    .streak-count { flex: 0 0 auto; }
+    .streak-grid { flex: 1 0 100%; }
+    .streak-meta { flex: 1 0 100%; text-align: left; }
+  }
+  /* Today card */
+  .today-card { background: var(--card-bg); border-radius: var(--radius); box-shadow: var(--shadow); padding: 1.25rem; margin-bottom: 0.75rem; border-left: 3px solid var(--accent); }
+  .today-header { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); margin-bottom: 0.75rem; }
+  /* Past days */
+  .workouts-wrap { background: var(--card-bg); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+  .day-block { display: flex; gap: 1rem; padding: 0.875rem 1.25rem; border-bottom: 1px solid var(--border); align-items: flex-start; }
+  .day-block:last-child { border-bottom: none; }
+  .day-block.rest { opacity: 0.45; }
+  .day-label { font-size: 0.78rem; font-weight: 500; color: var(--muted); opacity: 0.4; min-width: 48px; padding-top: 0.2rem; }
+  .day-rest { font-size: 0.85rem; color: var(--muted); }
+  .day-activities { flex: 1; display: flex; flex-direction: column; gap: 0.6rem; }
+  /* Activity rows */
+  .workout-activity { display: flex; flex-direction: column; gap: 0.3rem; }
+  .workout-activity-header { display: flex; align-items: center; gap: 0.75rem; }
+  .workout-name { font-weight: 600; font-size: 0.9rem; flex: 1; }
+  /* Exercise pills */
+  .ex-pills { display: flex; flex-wrap: wrap; gap: 0.3rem; padding-left: 1.6rem; }
+  .ex-pill { font-size: 0.72rem; background: var(--bg); color: var(--muted); padding: 0.15rem 0.5rem; border-radius: 5px; border: 1px solid var(--border); }
+  /* Heatmap */
+  .heatmap-tabs { display: flex; gap: 2px; background: var(--border); border-radius: 8px; padding: 2px; width: fit-content; margin-bottom: 0.875rem; }
+  .heatmap-tab { padding: 0.3rem 0.9rem; font-size: 0.8rem; font-weight: 500; border: none; background: none; color: var(--muted); border-radius: 6px; cursor: pointer; transition: background 0.15s, color 0.15s; }
+  .heatmap-tab.active { background: var(--card-bg); color: var(--fg); box-shadow: var(--shadow); }
+  .heatmap-tab:hover:not(.active) { color: var(--fg); }
+  .heatmap-wrap { background: var(--card-bg); border-radius: var(--radius); box-shadow: var(--shadow); padding: 1.25rem; overflow-x: auto; }
+  .heatmap-legend { display: flex; align-items: center; gap: 4px; margin-top: 0.75rem; }
+  .legend-swatch { display: inline-block; width: 12px; height: 12px; border-radius: 2px; }
+  .legend-label { font-size: 0.72rem; color: var(--muted); }
+  .legend-goal { font-size: 0.72rem; color: var(--muted); margin-left: 0.75rem; }
+  .dur-chip { font-size: 0.78rem; font-weight: 500; color: var(--muted); }
 </style>
+<script>
+  (function() {
+    var saved = localStorage.getItem('theme');
+    var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (saved === 'dark' || (!saved && prefersDark)) document.documentElement.classList.add('preload-dark');
+  })();
+</script>
 </head>
 <body>
-<h1>Streaks</h1>
-<p class="updated">Updated 20 April 2026, 08:26 AM</p>
-<p class="note">Hey! I realized that doing 50 pushups and 20 pull-ups daily is counterproductive and injury-prone. Instead, I'm pulling the last 7 days of Garmin data and posting it here, along with streaks for 10,000 steps and 50 squats — activities I can do daily without much downside. I'll also make more effort to log my workouts clearly in Garmin. Message me and check in — I'd love to hear from you!</p>
-<table>
-  <thead>
-    <tr>
-      <th>Activity</th>
-      <th>Current</th>
-      <th>Best</th>
-      <th>Total</th>
-      <th>Last 10 days</th>
-    </tr>
-  </thead>
-  <tbody>
-        <tr>
-            <td class="name">50 squats</td>
-            <td class="num">6</td>
-            <td class="num">6</td>
-            <td class="num">6</td>
-            <td class="grid"><span class="empty">□</span><span class="empty">□</span><span class="empty">□</span><span class="empty">□</span><span class="filled">■</span><span class="filled">■</span><span class="filled">■</span><span class="filled">■</span><span class="filled">■</span><span class="filled">■</span></td>
-        </tr>
-        <tr>
-            <td class="name">10k steps</td>
-            <td class="num">7</td>
-            <td class="num">7</td>
-            <td class="num">7</td>
-            <td class="grid"><span class="empty">□</span><span class="empty">□</span><span class="filled">■</span><span class="filled">■</span><span class="filled">■</span><span class="filled">■</span><span class="filled">■</span><span class="filled">■</span><span class="filled">■</span><span class="empty">□</span></td>
-        </tr>
-  </tbody>
-</table>
+<script>
+  if (document.documentElement.classList.contains('preload-dark')) {
+    document.body.classList.add('dark');
+    document.documentElement.classList.remove('preload-dark');
+  }
+</script>
+<div class="page-header">
+  <div>
+    <h1>Streaks</h1>
+    <p class="updated">Updated 20 April 2026, 08:30 AM</p>
+  </div>
+  <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme" onclick="toggleTheme()">
+    <svg id="icon-sun" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/></svg>
+    <svg id="icon-moon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+  </button>
+</div>
+<script>
+  function updateIcon() {
+    var dark = document.body.classList.contains('dark');
+    document.getElementById('icon-sun').style.display = dark ? '' : 'none';
+    document.getElementById('icon-moon').style.display = dark ? 'none' : '';
+  }
+  function toggleTheme() {
+    document.body.classList.toggle('dark');
+    localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+    updateIcon();
+  }
+  updateIcon();
+</script>
 
-<h2>
-  Activity Heatmap &nbsp;
-  <select id="heatmap-toggle" style="font-size:0.85rem;padding:0.2rem 0.5rem;border-radius:4px;border:1px solid var(--border);background:var(--bg);color:var(--fg);cursor:pointer;">
-    <option value="reps">Reps</option>
-    <option value="calories">Active Calories</option>
-    <option value="steps">Steps</option>
-  </select>
-</h2>
-<div id="heatmap-reps"></div>
-<div id="heatmap-calories" style="display:none"></div>
-<div id="heatmap-steps" style="display:none"></div>
+<div class="today-card">
+  <div class="today-header">Today · 20 Apr</div>
+  <div class="workout-activity">
+    <div class="workout-activity-header"><span class="workout-name">🧘 Meditation</span><span class="dur-chip">5m</span></div>
+  </div>
+  <div class="workout-activity">
+    <div class="workout-activity-header"><span class="workout-name">🏋️ Strength</span><span class="dur-chip">56m</span></div><div class="ex-pills"><span class="ex-pill">Curl 164</span><span class="ex-pill">Pull Up 20</span><span class="ex-pill">Squat 50</span></div>
+  </div>
+</div>
+<h2>Current Streaks</h2>
+<div class="streaks-wrap">
+<div class="streak-row">
+  <div class="streak-name">50 squats</div>
+  <div class="streak-count">
+    <div class="count-num">6 🔥</div>
+    <div class="count-label">day streak</div>
+  </div>
+  <div class="streak-grid"><span class="sq empty"></span><span class="sq empty"></span><span class="sq empty"></span><span class="sq empty"></span><span class="sq filled"></span><span class="sq filled"></span><span class="sq filled"></span><span class="sq filled"></span><span class="sq filled"></span><span class="sq filled"></span></div>
+  <div class="streak-meta">Best 6 · Total 6</div>
+</div>
+<div class="streak-row">
+  <div class="streak-name">10k steps</div>
+  <div class="streak-count">
+    <div class="count-num">7 🔥</div>
+    <div class="count-label">day streak</div>
+  </div>
+  <div class="streak-grid"><span class="sq empty"></span><span class="sq empty"></span><span class="sq filled"></span><span class="sq filled"></span><span class="sq filled"></span><span class="sq filled"></span><span class="sq filled"></span><span class="sq filled"></span><span class="sq filled"></span><span class="sq empty"></span></div>
+  <div class="streak-meta">Best 7 · Total 7</div>
+</div>
+<div class="streak-row">
+  <div class="streak-name">10000 steps</div>
+  <div class="streak-count">
+    <div class="count-num">1 🔥</div>
+    <div class="count-label">day streak</div>
+  </div>
+  <div class="streak-grid"><span class="sq empty"></span><span class="sq empty"></span><span class="sq empty"></span><span class="sq empty"></span><span class="sq empty"></span><span class="sq empty"></span><span class="sq empty"></span><span class="sq empty"></span><span class="sq filled"></span><span class="sq empty"></span></div>
+  <div class="streak-meta">Best 1 · Total 1</div>
+</div>
+</div>
+
+<h2>Recent Workouts</h2>
+<div class="workouts-wrap">
+<div class="day-block"><div class="day-label">19 Apr</div><div class="day-activities">
+  <div class="workout-activity">
+    <div class="workout-activity-header"><span class="workout-name">🏋️ Strength</span><span class="dur-chip">6m</span></div><div class="ex-pills"><span class="ex-pill">Squat 51</span></div>
+  </div>
+</div></div>
+<div class="day-block"><div class="day-label">18 Apr</div><div class="day-activities">
+  <div class="workout-activity">
+    <div class="workout-activity-header"><span class="workout-name">🏸 Badminton</span><span class="dur-chip">25m</span></div>
+  </div>
+  <div class="workout-activity">
+    <div class="workout-activity-header"><span class="workout-name">🏋️ Strength</span><span class="dur-chip">21m</span></div><div class="ex-pills"><span class="ex-pill">Push Up 7</span><span class="ex-pill">Sit Up 8</span><span class="ex-pill">Pull Up 13</span><span class="ex-pill">Unknown 9</span><span class="ex-pill">Triceps Extension 4</span></div>
+  </div>
+</div></div>
+<div class="day-block"><div class="day-label">17 Apr</div><div class="day-activities">
+  <div class="workout-activity">
+    <div class="workout-activity-header"><span class="workout-name">🏋️ Strength</span><span class="dur-chip">19m</span></div><div class="ex-pills"><span class="ex-pill">Push Up 45</span><span class="ex-pill">Pull Up 20</span><span class="ex-pill">Cardio 26</span><span class="ex-pill">Squat 25</span></div>
+  </div>
+</div></div>
+<div class="day-block"><div class="day-label">16 Apr</div><div class="day-activities">
+  <div class="workout-activity">
+    <div class="workout-activity-header"><span class="workout-name">🏋️ Strength</span><span class="dur-chip">2h 14m</span></div><div class="ex-pills"><span class="ex-pill">Push Up 32</span><span class="ex-pill">Pull Up 10</span><span class="ex-pill">Cardio 40</span><span class="ex-pill">Unknown 25</span></div>
+  </div>
+</div></div>
+<div class="day-block"><div class="day-label">15 Apr</div><div class="day-activities">
+  <div class="workout-activity">
+    <div class="workout-activity-header"><span class="workout-name">🧘 Meditation</span><span class="dur-chip">3m</span></div>
+  </div>
+  <div class="workout-activity">
+    <div class="workout-activity-header"><span class="workout-name">🏋️ Strength</span><span class="dur-chip">41m</span></div><div class="ex-pills"><span class="ex-pill">Push Up 50</span><span class="ex-pill">Pull Up 21</span><span class="ex-pill">Squat 50</span></div>
+  </div>
+  <div class="workout-activity">
+    <div class="workout-activity-header"><span class="workout-name">🏓 Table Tennis</span><span class="dur-chip">32m</span></div>
+  </div>
+</div></div>
+<div class="day-block"><div class="day-label">14 Apr</div><div class="day-activities">
+  <div class="workout-activity">
+    <div class="workout-activity-header"><span class="workout-name">🏓 Table Tennis</span><span class="dur-chip">21m</span></div>
+  </div>
+</div></div>
+</div>
+
+<h2>Activity Heatmap</h2>
+<div class="heatmap-tabs">
+  <button class="heatmap-tab active" data-heatmap="reps">Reps</button>
+  <button class="heatmap-tab" data-heatmap="calories">Calories</button>
+  <button class="heatmap-tab" data-heatmap="steps">Steps</button>
+</div>
+<div class="heatmap-wrap">
+  <div id="heatmap-reps"></div>
+  <div id="heatmap-calories" style="display:none"></div>
+  <div id="heatmap-steps" style="display:none"></div>
+  <div class="heatmap-legend">
+    <span class="legend-label">Less</span>
+    <span class="legend-swatch" style="background:#ebedf0"></span>
+    <span class="legend-swatch" style="background:#9be9a8"></span>
+    <span class="legend-swatch" style="background:#40c463"></span>
+    <span class="legend-swatch" style="background:#30a14e"></span>
+    <span class="legend-swatch" style="background:#216e39"></span>
+    <span class="legend-label">Goal+</span>
+    <span class="legend-goal" id="legend-goal-text"></span>
+  </div>
+</div>
 <script>
   const repsData = [{"date": "2025-11-01", "value": 16}, {"date": "2025-11-03", "value": 125}, {"date": "2025-11-07", "value": 99}, {"date": "2025-11-08", "value": 35}, {"date": "2025-11-15", "value": 94}, {"date": "2025-11-26", "value": 50}, {"date": "2025-11-27", "value": 56}, {"date": "2025-11-29", "value": 86}, {"date": "2025-12-01", "value": 208}, {"date": "2025-12-02", "value": 149}, {"date": "2025-12-03", "value": 214}, {"date": "2025-12-04", "value": 152}, {"date": "2025-12-06", "value": 129}, {"date": "2025-12-07", "value": 198}, {"date": "2025-12-09", "value": 95}, {"date": "2025-12-11", "value": 153}, {"date": "2025-12-12", "value": 107}, {"date": "2025-12-14", "value": 149}, {"date": "2025-12-15", "value": 165}, {"date": "2025-12-16", "value": 142}, {"date": "2025-12-19", "value": 165}, {"date": "2026-01-01", "value": 72}, {"date": "2026-01-02", "value": 95}, {"date": "2026-02-01", "value": 16}, {"date": "2026-02-02", "value": 23}, {"date": "2026-02-08", "value": 78}, {"date": "2026-02-09", "value": 47}, {"date": "2026-02-22", "value": 149}, {"date": "2026-02-23", "value": 97}, {"date": "2026-03-21", "value": 99}, {"date": "2026-04-05", "value": 93}, {"date": "2026-04-06", "value": 42}, {"date": "2026-04-15", "value": 121}, {"date": "2026-04-16", "value": 107}, {"date": "2026-04-17", "value": 116}, {"date": "2026-04-18", "value": 41}, {"date": "2026-04-19", "value": 51}, {"date": "2026-04-20", "value": 234}];
   const calsData = [{"date": "2025-11-01", "value": 1406}, {"date": "2025-11-02", "value": 258}, {"date": "2025-11-03", "value": 552}, {"date": "2025-11-04", "value": 378}, {"date": "2025-11-05", "value": 195}, {"date": "2025-11-06", "value": 278}, {"date": "2025-11-07", "value": 648}, {"date": "2025-11-08", "value": 311}, {"date": "2025-11-09", "value": 131}, {"date": "2025-11-10", "value": 379}, {"date": "2025-11-11", "value": 317}, {"date": "2025-11-12", "value": 981}, {"date": "2025-11-13", "value": 779}, {"date": "2025-11-14", "value": 651}, {"date": "2025-11-15", "value": 351}, {"date": "2025-11-16", "value": 249}, {"date": "2025-11-17", "value": 544}, {"date": "2025-11-18", "value": 433}, {"date": "2025-11-19", "value": 378}, {"date": "2025-11-20", "value": 844}, {"date": "2025-11-21", "value": 603}, {"date": "2025-11-22", "value": 567}, {"date": "2025-11-23", "value": 285}, {"date": "2025-11-24", "value": 152}, {"date": "2025-11-25", "value": 638}, {"date": "2025-11-26", "value": 71}, {"date": "2025-11-27", "value": 48}, {"date": "2025-11-28", "value": 46}, {"date": "2025-11-29", "value": 316}, {"date": "2025-11-30", "value": 384}, {"date": "2025-12-01", "value": 391}, {"date": "2025-12-02", "value": 515}, {"date": "2025-12-03", "value": 422}, {"date": "2025-12-04", "value": 380}, {"date": "2025-12-05", "value": 122}, {"date": "2025-12-06", "value": 485}, {"date": "2025-12-07", "value": 521}, {"date": "2025-12-08", "value": 76}, {"date": "2025-12-09", "value": 348}, {"date": "2025-12-10", "value": 132}, {"date": "2025-12-11", "value": 562}, {"date": "2025-12-12", "value": 408}, {"date": "2025-12-13", "value": 47}, {"date": "2025-12-14", "value": 309}, {"date": "2025-12-15", "value": 338}, {"date": "2025-12-16", "value": 461}, {"date": "2025-12-17", "value": 88}, {"date": "2025-12-18", "value": 61}, {"date": "2025-12-19", "value": 322}, {"date": "2025-12-20", "value": 193}, {"date": "2025-12-21", "value": 129}, {"date": "2025-12-22", "value": 530}, {"date": "2025-12-23", "value": 433}, {"date": "2025-12-24", "value": 388}, {"date": "2025-12-25", "value": 798}, {"date": "2025-12-26", "value": 421}, {"date": "2025-12-27", "value": 377}, {"date": "2025-12-28", "value": 651}, {"date": "2025-12-29", "value": 987}, {"date": "2025-12-30", "value": 949}, {"date": "2025-12-31", "value": 711}, {"date": "2026-01-01", "value": 409}, {"date": "2026-01-02", "value": 327}, {"date": "2026-01-03", "value": 880}, {"date": "2026-01-04", "value": 1078}, {"date": "2026-01-05", "value": 239}, {"date": "2026-01-06", "value": 352}, {"date": "2026-01-07", "value": 86}, {"date": "2026-01-08", "value": 400}, {"date": "2026-01-09", "value": 21}, {"date": "2026-01-10", "value": 52}, {"date": "2026-01-11", "value": 83}, {"date": "2026-01-12", "value": 178}, {"date": "2026-01-13", "value": 350}, {"date": "2026-01-14", "value": 374}, {"date": "2026-01-15", "value": 912}, {"date": "2026-01-16", "value": 228}, {"date": "2026-01-17", "value": 3}, {"date": "2026-01-18", "value": 159}, {"date": "2026-01-19", "value": 671}, {"date": "2026-01-20", "value": 505}, {"date": "2026-01-21", "value": 665}, {"date": "2026-01-22", "value": 1182}, {"date": "2026-01-23", "value": 133}, {"date": "2026-01-24", "value": 22}, {"date": "2026-01-25", "value": 602}, {"date": "2026-01-26", "value": 96}, {"date": "2026-01-27", "value": 1016}, {"date": "2026-01-28", "value": 107}, {"date": "2026-01-29", "value": 320}, {"date": "2026-01-30", "value": 96}, {"date": "2026-01-31", "value": 346}, {"date": "2026-02-01", "value": 319}, {"date": "2026-02-02", "value": 694}, {"date": "2026-02-03", "value": 469}, {"date": "2026-02-04", "value": 49}, {"date": "2026-02-05", "value": 317}, {"date": "2026-02-06", "value": 707}, {"date": "2026-02-07", "value": 211}, {"date": "2026-02-08", "value": 846}, {"date": "2026-02-09", "value": 866}, {"date": "2026-02-10", "value": 803}, {"date": "2026-02-11", "value": 176}, {"date": "2026-02-12", "value": 652}, {"date": "2026-02-13", "value": 246}, {"date": "2026-02-14", "value": 872}, {"date": "2026-02-15", "value": 395}, {"date": "2026-02-16", "value": 629}, {"date": "2026-02-17", "value": 621}, {"date": "2026-02-18", "value": 330}, {"date": "2026-02-19", "value": 103}, {"date": "2026-02-22", "value": 801}, {"date": "2026-02-23", "value": 640}, {"date": "2026-02-24", "value": 673}, {"date": "2026-02-25", "value": 457}, {"date": "2026-02-26", "value": 490}, {"date": "2026-02-27", "value": 312}, {"date": "2026-02-28", "value": 587}, {"date": "2026-03-01", "value": 537}, {"date": "2026-03-02", "value": 509}, {"date": "2026-03-03", "value": 225}, {"date": "2026-03-04", "value": 65}, {"date": "2026-03-05", "value": 326}, {"date": "2026-03-06", "value": 561}, {"date": "2026-03-07", "value": 414}, {"date": "2026-03-08", "value": 597}, {"date": "2026-03-09", "value": 485}, {"date": "2026-03-10", "value": 621}, {"date": "2026-03-11", "value": 300}, {"date": "2026-03-12", "value": 793}, {"date": "2026-03-13", "value": 290}, {"date": "2026-03-14", "value": 508}, {"date": "2026-03-15", "value": 399}, {"date": "2026-03-16", "value": 1190}, {"date": "2026-03-17", "value": 147}, {"date": "2026-03-18", "value": 923}, {"date": "2026-03-19", "value": 639}, {"date": "2026-03-20", "value": 200}, {"date": "2026-03-21", "value": 370}, {"date": "2026-03-23", "value": 195}, {"date": "2026-03-24", "value": 486}, {"date": "2026-03-25", "value": 277}, {"date": "2026-03-26", "value": 486}, {"date": "2026-03-27", "value": 394}, {"date": "2026-03-28", "value": 490}, {"date": "2026-03-29", "value": 342}, {"date": "2026-03-30", "value": 619}, {"date": "2026-03-31", "value": 5}, {"date": "2026-04-01", "value": 624}, {"date": "2026-04-02", "value": 398}, {"date": "2026-04-03", "value": 16}, {"date": "2026-04-04", "value": 622}, {"date": "2026-04-05", "value": 623}, {"date": "2026-04-06", "value": 610}, {"date": "2026-04-08", "value": 350}, {"date": "2026-04-09", "value": 574}, {"date": "2026-04-10", "value": 688}, {"date": "2026-04-11", "value": 573}, {"date": "2026-04-12", "value": 1095}, {"date": "2026-04-13", "value": 1079}, {"date": "2026-04-14", "value": 1004}, {"date": "2026-04-15", "value": 958}, {"date": "2026-04-16", "value": 635}, {"date": "2026-04-17", "value": 486}, {"date": "2026-04-18", "value": 1166}, {"date": "2026-04-19", "value": 444}, {"date": "2026-04-20", "value": 334}];
   const stepsData = [{"date": "2025-11-01", "value": 15631}, {"date": "2025-11-02", "value": 9780}, {"date": "2025-11-03", "value": 11693}, {"date": "2025-11-04", "value": 8715}, {"date": "2025-11-05", "value": 5638}, {"date": "2025-11-06", "value": 7321}, {"date": "2025-11-07", "value": 7595}, {"date": "2025-11-08", "value": 3752}, {"date": "2025-11-09", "value": 5663}, {"date": "2025-11-10", "value": 9714}, {"date": "2025-11-11", "value": 8288}, {"date": "2025-11-12", "value": 10681}, {"date": "2025-11-13", "value": 8077}, {"date": "2025-11-14", "value": 12297}, {"date": "2025-11-15", "value": 7839}, {"date": "2025-11-16", "value": 8383}, {"date": "2025-11-17", "value": 9015}, {"date": "2025-11-18", "value": 7910}, {"date": "2025-11-19", "value": 9408}, {"date": "2025-11-20", "value": 5988}, {"date": "2025-11-21", "value": 14736}, {"date": "2025-11-22", "value": 16048}, {"date": "2025-11-23", "value": 6633}, {"date": "2025-11-24", "value": 6316}, {"date": "2025-11-25", "value": 8950}, {"date": "2025-11-26", "value": 4170}, {"date": "2025-11-27", "value": 2052}, {"date": "2025-11-28", "value": 943}, {"date": "2025-11-29", "value": 4094}, {"date": "2025-11-30", "value": 10966}, {"date": "2025-12-01", "value": 3408}, {"date": "2025-12-02", "value": 5659}, {"date": "2025-12-03", "value": 3931}, {"date": "2025-12-04", "value": 4010}, {"date": "2025-12-05", "value": 4110}, {"date": "2025-12-06", "value": 5204}, {"date": "2025-12-07", "value": 4095}, {"date": "2025-12-08", "value": 2635}, {"date": "2025-12-09", "value": 7376}, {"date": "2025-12-10", "value": 3430}, {"date": "2025-12-11", "value": 5648}, {"date": "2025-12-12", "value": 6625}, {"date": "2025-12-13", "value": 3760}, {"date": "2025-12-14", "value": 4989}, {"date": "2025-12-15", "value": 5845}, {"date": "2025-12-16", "value": 9510}, {"date": "2025-12-17", "value": 2380}, {"date": "2025-12-18", "value": 1498}, {"date": "2025-12-19", "value": 4519}, {"date": "2025-12-20", "value": 6950}, {"date": "2025-12-21", "value": 4066}, {"date": "2025-12-22", "value": 13246}, {"date": "2025-12-23", "value": 6065}, {"date": "2025-12-24", "value": 5847}, {"date": "2025-12-25", "value": 19725}, {"date": "2025-12-26", "value": 13918}, {"date": "2025-12-27", "value": 11815}, {"date": "2025-12-28", "value": 19233}, {"date": "2025-12-29", "value": 19412}, {"date": "2025-12-30", "value": 15215}, {"date": "2025-12-31", "value": 37465}, {"date": "2026-01-01", "value": 10381}, {"date": "2026-01-02", "value": 6191}, {"date": "2026-01-03", "value": 12801}, {"date": "2026-01-04", "value": 7756}, {"date": "2026-01-05", "value": 9310}, {"date": "2026-01-06", "value": 6803}, {"date": "2026-01-07", "value": 2342}, {"date": "2026-01-08", "value": 6119}, {"date": "2026-01-09", "value": 3165}, {"date": "2026-01-10", "value": 3265}, {"date": "2026-01-11", "value": 6275}, {"date": "2026-01-12", "value": 2180}, {"date": "2026-01-13", "value": 6835}, {"date": "2026-01-14", "value": 8123}, {"date": "2026-01-15", "value": 8472}, {"date": "2026-01-16", "value": 5289}, {"date": "2026-01-17", "value": 101}, {"date": "2026-01-18", "value": 1512}, {"date": "2026-01-19", "value": 7355}, {"date": "2026-01-20", "value": 5874}, {"date": "2026-01-21", "value": 6358}, {"date": "2026-01-22", "value": 10852}, {"date": "2026-01-23", "value": 3437}, {"date": "2026-01-24", "value": 1568}, {"date": "2026-01-25", "value": 11358}, {"date": "2026-01-26", "value": 7772}, {"date": "2026-01-27", "value": 17318}, {"date": "2026-01-28", "value": 8276}, {"date": "2026-01-29", "value": 22973}, {"date": "2026-01-30", "value": 4738}, {"date": "2026-01-31", "value": 4513}, {"date": "2026-02-01", "value": 1010}, {"date": "2026-02-02", "value": 15501}, {"date": "2026-02-03", "value": 10365}, {"date": "2026-02-04", "value": 1434}, {"date": "2026-02-05", "value": 4026}, {"date": "2026-02-06", "value": 6537}, {"date": "2026-02-07", "value": 1558}, {"date": "2026-02-08", "value": 13543}, {"date": "2026-02-09", "value": 5302}, {"date": "2026-02-10", "value": 6423}, {"date": "2026-02-11", "value": 5301}, {"date": "2026-02-12", "value": 6396}, {"date": "2026-02-13", "value": 4431}, {"date": "2026-02-14", "value": 5521}, {"date": "2026-02-15", "value": 3500}, {"date": "2026-02-16", "value": 4570}, {"date": "2026-02-17", "value": 1592}, {"date": "2026-02-18", "value": 7809}, {"date": "2026-02-19", "value": 5025}, {"date": "2026-02-22", "value": 15571}, {"date": "2026-02-23", "value": 11356}, {"date": "2026-02-24", "value": 8378}, {"date": "2026-02-25", "value": 8619}, {"date": "2026-02-26", "value": 6794}, {"date": "2026-02-27", "value": 5730}, {"date": "2026-02-28", "value": 8569}, {"date": "2026-03-01", "value": 10368}, {"date": "2026-03-02", "value": 8807}, {"date": "2026-03-03", "value": 3549}, {"date": "2026-03-04", "value": 1012}, {"date": "2026-03-05", "value": 3775}, {"date": "2026-03-06", "value": 5078}, {"date": "2026-03-07", "value": 3685}, {"date": "2026-03-08", "value": 11474}, {"date": "2026-03-09", "value": 978}, {"date": "2026-03-10", "value": 8687}, {"date": "2026-03-11", "value": 4945}, {"date": "2026-03-12", "value": 8381}, {"date": "2026-03-13", "value": 2388}, {"date": "2026-03-14", "value": 6018}, {"date": "2026-03-15", "value": 2133}, {"date": "2026-03-16", "value": 8624}, {"date": "2026-03-17", "value": 4597}, {"date": "2026-03-18", "value": 4306}, {"date": "2026-03-19", "value": 3145}, {"date": "2026-03-20", "value": 4288}, {"date": "2026-03-21", "value": 7471}, {"date": "2026-03-22", "value": 79}, {"date": "2026-03-23", "value": 5001}, {"date": "2026-03-24", "value": 6196}, {"date": "2026-03-25", "value": 3568}, {"date": "2026-03-26", "value": 7774}, {"date": "2026-03-27", "value": 6178}, {"date": "2026-03-28", "value": 10684}, {"date": "2026-03-29", "value": 5159}, {"date": "2026-03-30", "value": 3990}, {"date": "2026-03-31", "value": 35}, {"date": "2026-04-01", "value": 7100}, {"date": "2026-04-02", "value": 3051}, {"date": "2026-04-03", "value": 213}, {"date": "2026-04-04", "value": 11499}, {"date": "2026-04-05", "value": 10305}, {"date": "2026-04-06", "value": 10154}, {"date": "2026-04-07", "value": 7}, {"date": "2026-04-08", "value": 9535}, {"date": "2026-04-09", "value": 11472}, {"date": "2026-04-10", "value": 8351}, {"date": "2026-04-11", "value": 5836}, {"date": "2026-04-12", "value": 7143}, {"date": "2026-04-13", "value": 12036}, {"date": "2026-04-14", "value": 12286}, {"date": "2026-04-15", "value": 11183}, {"date": "2026-04-16", "value": 10609}, {"date": "2026-04-17", "value": 10216}, {"date": "2026-04-18", "value": 10282}, {"date": "2026-04-19", "value": 12095}, {"date": "2026-04-20", "value": 3071}];
 
-  function initHeatmap(containerId, data) {
+  const COLORS = ['#ebedf0', '#9be9a8', '#40c463', '#30a14e', '#216e39'];
+  const METRICS = {
+    reps:     { domain: [1, 37, 75, 112],      goal: '150 reps/day',     fmt: function(v) { return v + ' reps'; } },
+    calories: { domain: [1, 150, 300, 450],     goal: '600 kcal/day',     fmt: function(v) { return v + ' kcal'; } },
+    steps:    { domain: [1, 2500, 5000, 7500],  goal: '10,000 steps/day', fmt: function(v) { return v.toLocaleString() + ' steps'; } }
+  };
+
+  function initHeatmap(containerId, data, metric) {
     const cal = new CalHeatmap();
     cal.paint({
       itemSelector: '#' + containerId,
@@ -99,161 +253,39 @@
       domain: { type: 'month' },
       subDomain: { type: 'day', radius: 2, width: 14, height: 14, gutter: 3 },
       date: { start: new Date('2025-11-01') },
-      data: {
-        source: data,
-        x: 'date',
-        y: 'value',
-        groupY: 'sum'
-      },
-      scale: {
-        color: {
-          type: 'threshold',
-          range: ['#ebedf0', '#9be9a8', '#40c463', '#30a14e', '#216e39'],
-          domain: [1, 25, 75, 150]
-        }
-      }
-    }, [[Tooltip, { text: function(timestamp, value) { return value ? value + (containerId.includes('reps') ? ' reps' : ' kcal') + ' on ' + new Date(timestamp).toDateString() : 'No data'; } }]]);
+      data: { source: data, x: 'date', y: 'value', groupY: 'sum' },
+      scale: { color: { type: 'threshold', range: COLORS, domain: METRICS[metric].domain } }
+    }, [[Tooltip, { text: function(timestamp, value) {
+      return value ? METRICS[metric].fmt(value) + ' on ' + new Date(timestamp).toDateString() : 'No data';
+    } }]]);
     return cal;
   }
 
-  function initStepsHeatmap(containerId, data) {
-    const cal = new CalHeatmap();
-    cal.paint({
-      itemSelector: '#' + containerId,
-      range: 6,
-      domain: { type: 'month' },
-      subDomain: { type: 'day', radius: 2, width: 14, height: 14, gutter: 3 },
-      date: { start: new Date('2025-11-01') },
-      data: {
-        source: data,
-        x: 'date',
-        y: 'value',
-        groupY: 'sum'
-      },
-      scale: {
-        color: {
-          type: 'threshold',
-          range: ['#ebedf0', '#fed976', '#feb24c', '#40c463', '#30a14e', '#FFD700'],
-          domain: [1, 2500, 5000, 10000, 20000]
-        }
-      }
-    }, [[Tooltip, { text: function(timestamp, value) { return value ? value.toLocaleString() + ' steps on ' + new Date(timestamp).toDateString() : 'No data'; } }]]);
-    return cal;
+  function setGoalText(metric) {
+    document.getElementById('legend-goal-text').textContent = 'Goal: ' + METRICS[metric].goal;
   }
 
   let calsCalInstance;
   let stepsCalInstance;
 
   document.addEventListener('DOMContentLoaded', function() {
-    initHeatmap('heatmap-reps', repsData);
-    document.getElementById('heatmap-toggle').addEventListener('change', function() {
-      document.getElementById('heatmap-reps').style.display = 'none';
-      document.getElementById('heatmap-calories').style.display = 'none';
-      document.getElementById('heatmap-steps').style.display = 'none';
-      if (this.value === 'reps') {
-        document.getElementById('heatmap-reps').style.display = '';
-      } else if (this.value === 'calories') {
-        document.getElementById('heatmap-calories').style.display = '';
-        if (!calsCalInstance) calsCalInstance = initHeatmap('heatmap-calories', calsData);
-      } else if (this.value === 'steps') {
-        document.getElementById('heatmap-steps').style.display = '';
-        if (!stepsCalInstance) stepsCalInstance = initStepsHeatmap('heatmap-steps', stepsData);
-      }
+    initHeatmap('heatmap-reps', repsData, 'reps');
+    setGoalText('reps');
+    document.querySelectorAll('.heatmap-tab').forEach(function(tab) {
+      tab.addEventListener('click', function() {
+        document.querySelectorAll('.heatmap-tab').forEach(function(t) { t.classList.remove('active'); });
+        this.classList.add('active');
+        var val = this.dataset.heatmap;
+        document.getElementById('heatmap-reps').style.display = val === 'reps' ? '' : 'none';
+        document.getElementById('heatmap-calories').style.display = val === 'calories' ? '' : 'none';
+        document.getElementById('heatmap-steps').style.display = val === 'steps' ? '' : 'none';
+        if (val === 'calories' && !calsCalInstance) calsCalInstance = initHeatmap('heatmap-calories', calsData, 'calories');
+        if (val === 'steps' && !stepsCalInstance) stepsCalInstance = initHeatmap('heatmap-steps', stepsData, 'steps');
+        setGoalText(val);
+      });
     });
   });
 </script>
-
-<h2>Recent Workouts</h2>
-<table>
-  <thead>
-    <tr>
-      <th>Activity</th>
-      <th>Date</th>
-      <th>Duration</th>
-      <th>Sets</th>
-    </tr>
-  </thead>
-  <tbody>
-        <tr>
-            <td class="name">Meditation</td>
-            <td>2026-04-20</td>
-            <td>5m</td>
-            <td class="sets"></td>
-        </tr>
-        <tr>
-            <td class="name">Strength</td>
-            <td>2026-04-20</td>
-            <td>56m</td>
-            <td class="sets">Curl: 20  Pull Up: 20  Curl: 61  Curl: 30  Squat: 50  Curl: 34  Curl: 19</td>
-        </tr>
-        <tr>
-            <td class="name">Strength</td>
-            <td>2026-04-19</td>
-            <td>6m</td>
-            <td class="sets">Squat: 51</td>
-        </tr>
-        <tr>
-            <td class="name">Badminton</td>
-            <td>2026-04-18</td>
-            <td>25m</td>
-            <td class="sets"></td>
-        </tr>
-        <tr>
-            <td class="name">Strength</td>
-            <td>2026-04-18</td>
-            <td>0m</td>
-            <td class="sets">Push Up: 7</td>
-        </tr>
-        <tr>
-            <td class="name">Strength</td>
-            <td>2026-04-18</td>
-            <td>18m</td>
-            <td class="sets">Sit Up: 8  Pull Up: 13  Unknown: 4  Triceps Extension: 4</td>
-        </tr>
-        <tr>
-            <td class="name">Strength</td>
-            <td>2026-04-18</td>
-            <td>2m</td>
-            <td class="sets">Unknown: 5</td>
-        </tr>
-        <tr>
-            <td class="name">Strength</td>
-            <td>2026-04-17</td>
-            <td>19m</td>
-            <td class="sets">Push Up: 45  Pull Up: 20  Cardio: 26  Squat: 25</td>
-        </tr>
-        <tr>
-            <td class="name">Strength</td>
-            <td>2026-04-16</td>
-            <td>2h 14m</td>
-            <td class="sets">Push Up: 32  Pull Up: 10  Cardio: 40  Unknown: 25</td>
-        </tr>
-        <tr>
-            <td class="name">Meditation</td>
-            <td>2026-04-15</td>
-            <td>3m</td>
-            <td class="sets"></td>
-        </tr>
-        <tr>
-            <td class="name">Strength</td>
-            <td>2026-04-15</td>
-            <td>41m</td>
-            <td class="sets">Push Up: 50  Pull Up: 21  Squat: 50</td>
-        </tr>
-        <tr>
-            <td class="name">Table Tennis</td>
-            <td>2026-04-15</td>
-            <td>32m</td>
-            <td class="sets"></td>
-        </tr>
-        <tr>
-            <td class="name">Table Tennis</td>
-            <td>2026-04-14</td>
-            <td>21m</td>
-            <td class="sets"></td>
-        </tr>
-  </tbody>
-</table>
 <script src="https://d3js.org/d3.v7.min.js"></script>
 <script src="https://unpkg.com/cal-heatmap/dist/cal-heatmap.min.js"></script>
 <script src="https://unpkg.com/@popperjs/core@2"></script>
